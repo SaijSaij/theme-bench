@@ -1,0 +1,52 @@
+{
+    "name": "saij/bench-plugin",
+    "description": "Plugin of the benchmark of wp-app-framework.",
+    "type": "wordpress-plugin",
+    "license": "proprietary",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/saijsaij/wp-app-framework"
+        }
+    ],
+    "require": {
+        "php": ">=8.5",
+        "saij/wp-app-framework": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Saij\\BenchPlugin\\": "src/"
+        }
+    },
+    "scripts": {
+        "build-manifest": "wp-app-framework build",
+        "release": "wp-app-framework release"
+    },
+    "extra": {
+        "wp-app-framework": {
+            "namespace": "bench-plugin"
+        },
+        "strauss": {
+            "target_directory": "vendor-prefixed",
+            "namespace_prefix": "Saij\\BenchPlugin\\Vendor\\",
+            "classmap_prefix": "Saij_BenchPlugin_Vendor_",
+            "include_root_autoload": true,
+            "update_call_sites": [
+                "src",
+                "bench-plugin.php"
+            ],
+            "delete_vendor_packages": false
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "8.5"
+        },
+        "sort-packages": true
+    },
+    "require-dev": {},
+    "scripts-descriptions": {
+        "build-manifest": "Builds and checks the manifest (writes nothing).",
+        "release": "Builds the release ZIP into dist/."
+    }
+}

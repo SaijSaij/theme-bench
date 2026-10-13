@@ -10,6 +10,8 @@
 	},
 	"devDependencies": {
 		"@saij/wp-app-framework": "file:vendor/saij/wp-app-framework",
-		"@wordpress/scripts": "^36.1.0"
+		"@tailwindcss/webpack": "^4.3.3",
+		"@wordpress/scripts": "^36.1.0",
+		"tailwindcss": "^4.3.3"
 	}
 }

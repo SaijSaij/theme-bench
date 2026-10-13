@@ -1,0 +1,20 @@
+/*
+ * Stylesheet of the theme, compiled with Tailwind CSS by the framework's webpack helper (build/styles.css), so the
+ * benchmark includes loading it (StyleAssets).
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@source "./**/*.twig";
+
+@layer components {
+	.surface-light {
+		background-color: #fafafa;
+	}
+
+	.surface-dark {
+		background-color: #1e1e1e;
+		color: #fafafa;
+	}
+}

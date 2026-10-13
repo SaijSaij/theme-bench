@@ -164,6 +164,9 @@ echo bench_difference('REST: route without framework, framework theme vs. baseli
 echo bench_difference('100 framework text blocks vs. 100 core blocks (framework theme)', $framework['100 framework text blocks'] ?? null, $framework['100 core blocks'] ?? null);
 echo bench_difference('100 cached text blocks vs. 100 core blocks (framework theme)', $framework['100 cached text blocks'] ?? null, $framework['100 core blocks'] ?? null);
 echo bench_difference('REST route of the framework vs. plain route (framework theme)', $framework['REST route of the framework'] ?? null, $framework['REST route without framework'] ?? null);
+echo bench_difference('Block editor page, framework theme vs. baseline', $framework['admin: block editor'] ?? null, $baseline['admin: block editor'] ?? null);
+echo bench_difference('Event query vs. 100 core blocks (framework theme)', $framework['event query'] ?? null, $framework['100 core blocks'] ?? null);
+echo bench_difference('Cached event query vs. event query', $framework['event query, cached'] ?? null, $framework['event query'] ?? null);
 
 if ((int) $requests > 0) {
     echo sprintf("\n## Throughput\n\nRequests per second with `ab -n %s -c 4` against the front end (without the timer).\n\n| Page | without framework | with framework |\n|---|---:|---:|\n", $requests);

@@ -1,0 +1,16 @@
+<figure {{ block_wrapper_attributes({class: 'showcase'}) }}>
+    <div{{ field('image') }}>{{ wp_attachment_image(attrs.image, 'medium') }}</div>
+    <p>{{ wp_attachment_image_url(attrs.image) }} {{ wp_attachment_url(attrs.image) }} {{ wp_attachment_alt(attrs.image) }}</p>
+    <figcaption>{{ wp_attachment_caption(attrs.image) }}</figcaption>
+    {% set post = post(attrs.post) %}
+    {% if post %}
+        <h3><a href="{{ wp_post_url(attrs.post) }}">{{ post.title }}</a></h3>
+        <p>{{ wp_post_excerpt(attrs.post) }} {{ wp_post_date(attrs.post) }}</p>
+        {{ wp_post_thumbnail(attrs.post) }}
+        <p><a href="{{ wp_user_url(post.authorId) }}">{{ wp_user_name(post.authorId) }}</a></p>
+    {% endif %}
+    <p>{{ wp_site_name() }} – {{ wp_site_description() }} – <a href="{{ wp_home_url() }}">home</a></p>
+    <p>{% if wp_is_user_logged_in() %}<a href="{{ wp_logout_url() }}">out</a>{% else %}<a href="{{ wp_login_url() }}">in</a>{% endif %}</p>
+    <p>{{ wp_date('Y-m-d', 1767225600) }} {{ wp_human_time_diff(1767225600, 1767312000) }} {{ wp_number_format(12345.678, 2) }} {{ wp_size_format(1048576) }}</p>
+    {% if is_editor() %}<p>editor</p>{% endif %}
+</figure>

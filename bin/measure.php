@@ -6,7 +6,9 @@
  * the Docker network.
  *
  * Usage: php -- <scenarios.json> < measure.php
- * The JSON holds {base, warmup, runs, auth?, scenarios: [{name, method, path, body?, auth?}]}.
+ * The JSON holds {base, warmup, runs, auth?, login?, coverage?, scenarios: [{name, method, path, body?, auth?, login?,
+ * expect?, status?}]}: status is the expected HTTP status (default 200); auth is "user:application password" for REST routes, login "user:password" for admin pages (cookies of
+ * one login). With coverage, every scenario runs once with the header X-Bench-Coverage instead of being timed.
  */
 
 declare(strict_types=1);
@@ -31,20 +33,20 @@ if (!is_array($decoded) || !is_string($decoded['base'] ?? null) || !is_array($de
     fwrite(STDERR, "ERROR: invalid scenario file.\n");
     exit(1);
 }
-/** @var array{base: string, warmup: int, runs: int, auth?: string, scenarios: list<array{name: string, path: string, method?: string, body?: mixed, auth?: bool, expect?: string}>} $config Written by bin/bench. */
+/** @var array{base: string, warmup: int, runs: int, auth?: string, login?: string, coverage?: bool, scenarios: list<array{name: string, path: string, method?: string, body?: mixed, auth?: bool, login?: bool, expect?: string, status?: int}>} $config Written by bin/bench. */
 $config = $decoded;
 
 /**
  * One request; the timings from the comment the timer plugin appends, plus the wall time of the client.
  *
- * @param array{name: string, path: string, method?: string, body?: mixed, auth?: bool, expect?: string} $scenario
+ * @param array{name: string, path: string, method?: string, body?: mixed, auth?: bool, login?: bool, expect?: string, status?: int} $scenario
  * @return array<string, float>
  */
-function bench_request(string $base, array $scenario, ?string $auth): array
+function bench_request(string $base, array $scenario, ?string $auth, ?string $cookies = null, bool $coverage = false): array
 {
     $method = $scenario['method'] ?? 'GET';
     $curl = curl_init($base . $scenario['path']);
-    $headers = ['X-Bench: 1'];
+    $headers = [$coverage ? 'X-Bench-Coverage: 1' : 'X-Bench: 1'];
     /** @var array<int, mixed> $options */
     $options = [CURLOPT_RETURNTRANSFER => true];
     if ($method === 'POST') {
@@ -55,19 +57,25 @@ function bench_request(string $base, array $scenario, ?string $auth): array
     if (($scenario['auth'] ?? false) && $auth !== null) {
         $options[CURLOPT_USERPWD] = $auth;
     }
+    if (($scenario['login'] ?? false) && $cookies !== null) {
+        $options[CURLOPT_COOKIE] = $cookies;
+    }
     $options[CURLOPT_HTTPHEADER] = $headers;
     curl_setopt_array($curl, $options);
     $body = curl_exec($curl);
     $status = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
     $wall = curl_getinfo($curl, CURLINFO_TOTAL_TIME) * 1000;
-    if (!is_string($body) || $status !== 200) {
+    if (!is_string($body) || $status !== ($scenario['status'] ?? 200)) {
         throw new RuntimeException(sprintf('%s %s answered HTTP %d.', $method, $scenario['path'], $status));
-    }
-    if (preg_match('/<!--bench-timing:(\{.*?\})-->/', $body, $match) !== 1) {
-        throw new RuntimeException(sprintf('%s %s has no timings; is the plugin bench-timer active?', $method, $scenario['path']));
     }
     if (isset($scenario['expect']) && !str_contains($body, $scenario['expect'])) {
         throw new RuntimeException(sprintf('%s %s does not contain "%s".', $method, $scenario['path'], $scenario['expect']));
+    }
+    if ($coverage) {
+        return ['wall' => $wall];
+    }
+    if (preg_match('/<!--bench-timing:(\{.*?\})-->/', $body, $match) !== 1) {
+        throw new RuntimeException(sprintf('%s %s has no timings; is the plugin bench-timer active?', $method, $scenario['path']));
     }
 
     /** @var array<string, float> $timings Written by the plugin bench-timer. */
@@ -76,16 +84,53 @@ function bench_request(string $base, array $scenario, ?string $auth): array
     return [...$timings, 'wall' => $wall];
 }
 
+// One login for the admin pages; its cookies (as Cookie header) are sent by the scenarios with login.
+$cookies = null;
+if (isset($config['login'])) {
+    [$user, $password] = explode(':', $config['login'], 2) + [1 => ''];
+    $curl = curl_init($config['base'] . '/wp-login.php');
+    curl_setopt_array($curl, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => http_build_query(['log' => $user, 'pwd' => $password, 'testcookie' => '1']),
+        CURLOPT_COOKIE => 'wordpress_test_cookie=WP%20Cookie%20check',
+        // Enables the cookie engine, so CURLINFO_COOKIELIST lists the cookies the login set.
+        CURLOPT_COOKIEFILE => '',
+    ]);
+    curl_exec($curl);
+    $pairs = [];
+    foreach (curl_getinfo($curl, CURLINFO_COOKIELIST) as $line) {
+        // Netscape format: domain, subdomains, path, secure, expiry, name, value.
+        $fields = explode("\t", $line);
+        if (count($fields) === 7) {
+            $pairs[] = $fields[5] . '=' . $fields[6];
+        }
+    }
+    if ($pairs === []) {
+        throw new RuntimeException(sprintf('The login of %s at %s/wp-login.php set no cookies.', $user, $config['base']));
+    }
+    $cookies = implode('; ', $pairs);
+}
+$auth = $config['auth'] ?? null;
+
+if ($config['coverage'] ?? false) {
+    foreach ($config['scenarios'] as $scenario) {
+        bench_request($config['base'], $scenario, $auth, $cookies, true);
+    }
+    echo "{}\n";
+    exit(0);
+}
+
 // Warm-up per scenario, then the scenarios in turn, so a drift of the machine affects all of them alike.
 foreach ($config['scenarios'] as $scenario) {
     for ($i = 0; $i < $config['warmup']; $i++) {
-        bench_request($config['base'], $scenario, $config['auth'] ?? null);
+        bench_request($config['base'], $scenario, $auth, $cookies);
     }
 }
 $samples = [];
 for ($i = 0; $i < $config['runs']; $i++) {
     foreach ($config['scenarios'] as $scenario) {
-        $samples[$scenario['name']][] = bench_request($config['base'], $scenario, $config['auth'] ?? null);
+        $samples[$scenario['name']][] = bench_request($config['base'], $scenario, $auth, $cookies);
     }
 }
 

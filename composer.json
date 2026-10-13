@@ -29,7 +29,10 @@
     },
     "extra": {
         "wp-app-framework": {
-            "namespace": "bench"
+            "namespace": "bench",
+            "template-plugins": [
+                "bench-plugin"
+            ]
         },
         "strauss": {
             "target_directory": "vendor-prefixed",

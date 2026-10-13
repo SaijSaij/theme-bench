@@ -11,6 +11,38 @@
 
 declare(strict_types=1);
 
+// Code coverage of the framework (bin/bench --coverage, Xdebug in mode coverage): started before every other plugin,
+// since bin/bench installs this plugin as 0-bench-timer and WordPress loads plugins in alphabetical order.
+if (($_SERVER['HTTP_X_BENCH_COVERAGE'] ?? '') === '1' && function_exists('xdebug_start_code_coverage')) {
+    xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
+    register_shutdown_function(static function (): void {
+        $covered = [];
+        foreach (xdebug_get_code_coverage() as $file => $lines) {
+            if (str_contains($file, '/saij/wp-app-framework/src/')) {
+                $covered[$file] = $lines;
+            }
+        }
+        if (!is_dir('/tmp/coverage')) {
+            mkdir('/tmp/coverage', 0777, true);
+        }
+        file_put_contents('/tmp/coverage/' . uniqid('', true) . '.json', (string) json_encode($covered));
+    });
+}
+
+// The database queries of a request with their callers (bin/bench --profile), appended as HTML comment.
+if (($_SERVER['HTTP_X_BENCH_QUERIES'] ?? '') === '1') {
+    /** @var list<string> $benchQueries */
+    $benchQueries = [];
+    add_filter('query', static function (string $query) use (&$benchQueries): string {
+        $benchQueries[] = preg_replace('/\s+/', ' ', substr($query, 0, 160)) . "\n    " . wp_debug_backtrace_summary(null, 3);
+
+        return $query;
+    });
+    add_action('shutdown', static function () use (&$benchQueries): void {
+        echo "<!--bench-queries\n" . str_replace('--', '- -', implode("\n", $benchQueries)) . "\n-->";
+    }, PHP_INT_MIN);
+}
+
 if (($_SERVER['HTTP_X_BENCH'] ?? '') === '1') {
     /** @var array<string, float> $benchMarks Seconds since the start of the request, by mark. */
     $benchMarks = ['plugin' => microtime(true)];

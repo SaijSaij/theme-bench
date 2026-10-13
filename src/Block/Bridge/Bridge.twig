@@ -1,0 +1,4 @@
+<div {{ block_wrapper_attributes({class: 'bridge'}) }}>
+    <ul>{% for note in notes %}<li>{{ note }}</li>{% endfor %}</ul>
+    {% if has_plugin('bench-plugin') %}<p>{{ bench_plugin_note_count() }} notes</p>{% endif %}
+</div>

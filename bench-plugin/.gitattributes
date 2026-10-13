@@ -1,0 +1,3 @@
+# Development files, not shipped in the release ZIP.
+/.gitattributes export-ignore
+/.gitignore export-ignore

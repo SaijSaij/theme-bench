@@ -1,0 +1,4 @@
+<section {{ block_wrapper_attributes({class: 'panel'}) }}>
+    <h3{{ field('title') }}>{{ attrs.title|bench_emphasize }}</h3>
+    <p>{{ bench_greeting(attrs.title) }}</p>
+</section>

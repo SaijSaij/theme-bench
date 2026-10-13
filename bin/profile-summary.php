@@ -31,9 +31,10 @@ function bench_arguments(): array
 function bench_component(string $file): string
 {
     return match (true) {
-        str_contains($file, '/vendor-prefixed/saij/wp-app-framework/') => 'framework',
-        str_contains($file, '/vendor-prefixed/twig/') || str_contains($file, '/cache/theme-bench/twig/') => 'Twig (with compiled templates)',
-        str_contains($file, '/vendor-prefixed/') => 'Composer and other dependencies',
+        // vendor-prefixed/ in release mode, vendor/ in development mode.
+        preg_match('#/vendor(-prefixed)?/saij/wp-app-framework/#', $file) === 1 => 'framework',
+        preg_match('#/vendor(-prefixed)?/twig/#', $file) === 1 || str_contains($file, '/cache/theme-bench/twig/') => 'Twig (with compiled templates)',
+        preg_match('#/vendor(-prefixed)?/#', $file) === 1 => 'Composer and other dependencies',
         str_contains($file, '/themes/theme-bench/') => 'theme',
         str_contains($file, '/plugins/bench-timer/') => 'timer plugin',
         default => 'WordPress',

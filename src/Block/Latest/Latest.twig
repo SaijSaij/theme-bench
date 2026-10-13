@@ -1,0 +1,4 @@
+<div {{ block_wrapper_attributes({class: 'latest'}) }}>
+    <ul>{% for post in posts.posts %}<li>{{ post.title }}</li>{% endfor %}</ul>
+    <p>{{ posts.total }} posts, {{ pages }} pages, first page {{ first ? first.title : '-' }}</p>
+</div>

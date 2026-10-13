@@ -1,11 +1,12 @@
 # CLAUDE.md – theme-bench
 
-Benchmark of [wp-app-framework](https://github.com/saijsaij/wp-app-framework): a minimal theme with the framework (slug `theme-bench`, namespace `bench`, PHP `Saij\ThemeBench\`), the same theme without it (`baseline/`), a timer plugin (`timer/`) and the script `bin/bench`. The README explains scenarios, phases and options. Framework principles and rules: the framework's CLAUDE.md.
+Benchmark of [wp-app-framework](https://github.com/saijsaij/wp-app-framework): a theme with the framework (slug `theme-bench`, namespace `bench`, PHP `Saij\ThemeBench\`), the same theme without it (`baseline/`), a plugin with a framework instance (`bench-plugin/`, namespace `bench-plugin`, PHP `Saij\BenchPlugin\`), a timer plugin (`timer/`) and the script `bin/bench` (measurement, `--dev`, `--profile`, `--coverage`). The README explains scenarios, phases and options. Framework principles and rules: the framework's CLAUDE.md.
 
 ## Rules
 
 - The two themes must stay comparable: the baseline is built from `baseline/style.css` plus the `theme.json` and `templates/` of the theme; never add styles, templates or code to only one of them.
-- The benchmark measures the framework, not the theme: blocks stay small and typical (text fields, enum, value objects, a container, a cached block). A new framework feature worth measuring gets a block and a scenario of its own; keep the existing ones so reports stay comparable.
+- The benchmark measures the framework, not the theme: blocks and services stay small and typical. Every area of the framework that runs on requests has a scenario; a new framework feature gets a block or service and a scenario of its own (check with `--coverage`), and the existing ones stay so reports stay comparable.
+- `bench-plugin/` is a project of its own: its files are `export-ignore` here, and `bin/bench` releases it from a copy with its own git repository. The theme does not require it with Composer; PHPStan scans its `src/` for the public API the theme uses.
 - Measure in the release site (release mode, Xdebug off); the development site (Xdebug, manifest stat checks) gives other numbers.
 - Reports in `reports/` are not committed; the results of a run worth keeping go into the step archive of the plan.
 - Class properties are never `public` (exceptions: block attribute and value classes); everything in this repository is English; other repositories are linked by GitHub URL.
@@ -17,5 +18,5 @@ Run from a [wp-dev-env](https://github.com/saijsaij/wp-dev-env) checkout next to
 ```sh
 docker compose run --rm tools composer --working-dir=/workspace/theme-bench build-manifest
 docker compose run --rm tools composer --working-dir=/workspace/theme-bench lint   # PHPStan (max) and PHP-CS-Fixer, also bin/ and timer/
-../theme-bench/bin/bench [--skip-build] [--profile]
+../theme-bench/bin/bench [--skip-build] [--dev] [--profile | --coverage]
 ```

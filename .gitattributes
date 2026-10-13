@@ -11,3 +11,4 @@
 /phpstan.dist.neon export-ignore
 /timer/** export-ignore
 /webpack.config.js export-ignore
+/bench-plugin/** export-ignore

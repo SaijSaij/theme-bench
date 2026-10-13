@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2869b30d18e931fad5499745b12acf5e",
+    "content-hash": "82a8ec26f06099f0682c47a7c748c7ae",
     "packages": [
         {
             "name": "saij/wp-app-framework",

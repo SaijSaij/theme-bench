@@ -1,0 +1,5 @@
+<div {{ block_wrapper_attributes({class: 'banner banner--' ~ density.value}) }}>
+    <p>{{ settings.general.tagline }}</p>
+    <div>{{ settings.general.imprint|raw }}</div>
+    <ul>{% for link in settings.general.links %}<li><a href="{{ link.url }}">{{ link.label }}</a></li>{% endfor %}</ul>
+</div>

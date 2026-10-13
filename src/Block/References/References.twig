@@ -1,0 +1,7 @@
+<div {{ block_wrapper_attributes({class: 'references'}) }}>
+    <p><a href="{{ wp_post_url(attrs.page) }}">{{ wp_post_title(attrs.page) }}</a></p>
+    <ul>{% for id in attrs.events %}<li>{{ wp_post_title(id) }} {{ wp_post_date(id) }}</li>{% endfor %}</ul>
+    <p><a href="{{ wp_term_url(attrs.genre) }}">{{ wp_term_name(attrs.genre) }}</a></p>
+    <p>{{ wp_user_name(attrs.author) }} {{ wp_avatar(attrs.author) }}</p>
+    {% if attrs.event %}<p>{{ attrs.event.title }}</p>{% endif %}
+</div>

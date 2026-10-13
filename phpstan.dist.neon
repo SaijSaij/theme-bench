@@ -8,3 +8,6 @@ parameters:
         - functions.php
         - timer
         - bin
+    # The public API of bench-plugin, which the theme uses (#[PluginApi]); not a Composer dependency.
+    scanDirectories:
+        - bench-plugin/src

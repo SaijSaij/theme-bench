@@ -1,0 +1,7 @@
+/vendor/
+/vendor-prefixed/
+/node_modules/
+/generated/
+/build/
+/dist/
+/reports/

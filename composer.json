@@ -1,0 +1,62 @@
+{
+    "name": "saij/theme-bench",
+    "description": "Benchmark theme for wp-app-framework: measures the cost of the framework per request against the same theme without it.",
+    "type": "wordpress-theme",
+    "license": "proprietary",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/saijsaij/wp-app-framework"
+        }
+    ],
+    "require": {
+        "php": ">=8.5",
+        "saij/wp-app-framework": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Saij\\ThemeBench\\": "src/"
+        }
+    },
+    "scripts": {
+        "build-manifest": "wp-app-framework build",
+        "lint": [
+            "phpstan analyse --no-progress --memory-limit=1G",
+            "php-cs-fixer check --diff"
+        ],
+        "fix": "php-cs-fixer fix",
+        "release": "wp-app-framework release"
+    },
+    "extra": {
+        "wp-app-framework": {
+            "namespace": "bench"
+        },
+        "strauss": {
+            "target_directory": "vendor-prefixed",
+            "namespace_prefix": "Saij\\ThemeBench\\Vendor\\",
+            "classmap_prefix": "Saij_ThemeBench_Vendor_",
+            "include_root_autoload": true,
+            "update_call_sites": [
+                "src",
+                "functions.php"
+            ],
+            "delete_vendor_packages": false
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "8.5"
+        },
+        "sort-packages": true
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "php-stubs/wordpress-stubs": "^7.1",
+        "phpstan/phpstan": "^2.3",
+        "szepeviktor/phpstan-wordpress": "^2.0"
+    },
+    "scripts-descriptions": {
+        "build-manifest": "Builds and checks the manifest (writes nothing).",
+        "release": "Builds the release ZIP into dist/."
+    }
+}

@@ -1,0 +1,15 @@
+{
+	"name": "theme-bench",
+	"private": true,
+	"license": "GPL-2.0-or-later",
+	"engines": {
+		"node": ">=24"
+	},
+	"scripts": {
+		"build": "wp-scripts build"
+	},
+	"devDependencies": {
+		"@saij/wp-app-framework": "file:vendor/saij/wp-app-framework",
+		"@wordpress/scripts": "^36.1.0"
+	}
+}

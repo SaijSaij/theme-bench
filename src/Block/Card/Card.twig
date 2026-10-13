@@ -1,0 +1,8 @@
+<div {{ block_wrapper_attributes({class: 'card card--' ~ attrs.tone.value}) }}>
+    <h3{{ field('title') }}>{{ attrs.title }}</h3>
+    <ul>
+        {% for link in attrs.links %}
+            <li><a href="{{ link.url }}"{{ field('links.' ~ loop.index0 ~ '.label') }}>{{ link.label }}</a></li>
+        {% endfor %}
+    </ul>
+</div>

@@ -1,0 +1,59 @@
+<?php
+
+/**
+ * Plugin Name: Bench Timer
+ * Description: Measures the phases of a request for the benchmark of wp-app-framework. Active only for requests with the header X-Bench: 1, which get the timings appended as HTML comment <!--bench-timing:{json}-->. Also registers a REST route without the framework for comparison.
+ * Version: 0.1.0
+ * Requires at least: 7.1
+ * Requires PHP: 8.5
+ * License: Proprietary
+ */
+
+declare(strict_types=1);
+
+if (($_SERVER['HTTP_X_BENCH'] ?? '') === '1') {
+    /** @var array<string, float> $benchMarks Seconds since the start of the request, by mark. */
+    $benchMarks = ['plugin' => microtime(true)];
+    $benchMark = static function (string $name) use (&$benchMarks): void {
+        $benchMarks[$name] = microtime(true);
+    };
+    $benchMemory = [];
+
+    // functions.php of the theme, and with it the boot of the framework, loads between these two actions.
+    add_action('setup_theme', static fn() => $benchMark('setup_theme'), PHP_INT_MIN);
+    add_action('after_setup_theme', static function () use ($benchMark, &$benchMemory): void {
+        $benchMark('after_setup_theme');
+        $benchMemory['theme'] = memory_get_usage();
+    }, PHP_INT_MAX);
+    add_action('wp_loaded', static fn() => $benchMark('wp_loaded'), PHP_INT_MAX);
+    add_action('shutdown', static function () use (&$benchMarks, &$benchMemory): void {
+        $start = is_numeric($_SERVER['REQUEST_TIME_FLOAT'] ?? null) ? (float) $_SERVER['REQUEST_TIME_FLOAT'] : $benchMarks['plugin'];
+        $end = microtime(true);
+        $at = static fn(string $mark): float => $benchMarks[$mark] ?? $end;
+        $milliseconds = static fn(float $seconds): float => round($seconds * 1000, 3);
+        echo '<!--bench-timing:' . json_encode([
+            // WordPress up to the action setup_theme: core, mu-plugins, plugins.
+            'core' => $milliseconds($at('setup_theme') - $start),
+            // functions.php of the theme and after_setup_theme: the boot of the framework.
+            'theme' => $milliseconds($at('after_setup_theme') - $at('setup_theme')),
+            // init and wp_loaded: registration of blocks, post types, settings, hooks.
+            'init' => $milliseconds($at('wp_loaded') - $at('after_setup_theme')),
+            // The request itself: query and template, or the REST dispatch.
+            'main' => $milliseconds($end - $at('wp_loaded')),
+            'total' => $milliseconds($end - $start),
+            'memoryTheme' => $benchMemory['theme'] ?? 0,
+            'memoryPeak' => memory_get_peak_usage(),
+            'queries' => get_num_queries(),
+        ]) . '-->';
+    }, PHP_INT_MIN);
+}
+
+// The counterpart of the framework route bench/v1/ping, registered with WordPress alone.
+add_action('rest_api_init', static function (): void {
+    register_rest_route('bench-plain/v1', '/ping', [
+        'methods' => 'GET',
+        'permission_callback' => '__return_true',
+        'args' => ['value' => ['type' => 'integer', 'default' => 1]],
+        'callback' => static fn(WP_REST_Request $request): array => ['pong' => $request->get_param('value')],
+    ]);
+});

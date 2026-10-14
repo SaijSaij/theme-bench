@@ -8,6 +8,18 @@
 
 @source "../src/**/*.twig";
 
+/* A font marked for preloading (StyleAssets::preloadFonts()), used by the media block. */
+@font-face {
+	/* wp-app-framework: preload */
+	font-family: "Bench Icons";
+	src: url("./fonts/bench.woff2") format("woff2");
+	font-display: swap;
+}
+
+.media figcaption {
+	font-family: "Bench Icons", sans-serif;
+}
+
 @layer components {
 	.surface-light {
 		background-color: #fafafa;

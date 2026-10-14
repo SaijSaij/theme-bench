@@ -152,6 +152,7 @@ repeat 100 '<!-- wp:bench/cached {"title":"Title %d","body":"Body \\u003cstrong\
 repeat 50 '<!-- wp:bench/panel {"title":"Panel %d","surface":"dark"} /-->\n' | page bench-panels >/dev/null
 repeat 100 '<!-- wp:bench/paragraph -->\nParagraph <em>%d</em> of %d\n<!-- /wp:bench/paragraph -->\n' | page bench-paragraphs >/dev/null
 repeat 20 '<!-- wp:bench/banner /-->\n<!-- wp:bench/bridge /-->\n' | page bench-settings >/dev/null
+repeat 10 '<!-- wp:bench/media /-->\n' | page bench-media >/dev/null
 
 # Events with meta and genres, a venue for the classic edit screen, and references to them.
 genre="$(wp term create bench_genre Rock --porcelain)"
@@ -236,6 +237,7 @@ scenarios() {
         scenario "core post classes and cached variants" "/bench-latest/?variant=a" "Bench tagline a"
         scenario "REST route with cache and variants" "/wp-json/bench/v1/events/${events[0]}" '\"capacity\":2'
         scenario "REST route with table rows" /wp-json/bench/v1/log '\"count\":50'
+        scenario "10 media blocks (static assets, image variants)" /bench-media/ '<picture>'
     fi
     if [[ "${theme}" == theme-bench && "${mode}" == coverage ]]; then
         # Paths the timing leaves out: writes change the state other scenarios measure, errors are no typical requests.
@@ -248,6 +250,7 @@ scenarios() {
         scenario "editor render route with an invalid block" /wp-json/wp-app-framework/v1/theme-bench/render wp_app_framework_invalid_attributes ",\"method\":\"POST\",\"auth\":true,\"body\":{\"blocks\":[{\"name\":\"bench/card\",\"attributes\":{\"tone\":\"red\"}}]}"
         # WP-Cron: a task planned for now and the event sweep, which the coverage run made due; wp-cron.php runs both
         # (or a WP-Cron request WordPress spawned before, which the timer plugin covers as well).
+        scenario "importing an asset into the media library" /wp-json/bench/v1/media '\"id\"' ",\"method\":\"POST\",\"auth\":true,\"body\":{}"
         scenario "planning a cron task" /wp-json/bench/v1/reindex '\"scheduled\"' ",\"method\":\"POST\",\"body\":{\"postId\":${events[0]}}"
         scenario "WP-Cron run" /wp-cron.php ""
     fi
@@ -278,7 +281,7 @@ if [[ "${mode}" == profile ]]; then
         echo "== Profiling ${theme}"
         wp theme activate "${theme}" >/dev/null
         pages=(bench-empty bench-core)
-        [[ "${theme}" == theme-bench ]] && pages+=(bench-text bench-card bench-panels bench-paragraphs bench-settings bench-references bench-links bench-events event)
+        [[ "${theme}" == theme-bench ]] && pages+=(bench-text bench-card bench-panels bench-paragraphs bench-settings bench-references bench-links bench-events bench-media event)
         for path in "${pages[@]}"; do
             # Warm OPcache and the caches first; only the last request is profiled.
             for ((i = 0; i < 5; i++)); do

@@ -4,10 +4,22 @@ declare(strict_types=1);
 
 namespace Saij\BenchPlugin\Twig;
 
+use Saij\WpAppFramework\Asset\Assets;
 use Saij\WpAppFramework\Twig\TemplateFunction;
 
-final class NoteTemplates
+final readonly class NoteTemplates
 {
+    public function __construct(private Assets $assets) {}
+
+    /**
+     * An asset of the plugin, which the theme overrides (overrides/bench-plugin/assets/).
+     */
+    #[TemplateFunction('bench_plugin_pin', html: true, public: true)]
+    public function pin(): string
+    {
+        return $this->assets->image('images/pin.svg', '');
+    }
+
     #[TemplateFunction('bench_plugin_note_count', public: true)]
     public function noteCount(): int
     {

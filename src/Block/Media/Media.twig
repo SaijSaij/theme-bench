@@ -1,0 +1,5 @@
+<figure {{ block_wrapper_attributes({class: 'media'}) }}>
+    {{ asset_image('images/photo.jpg', 'Photo', {widths: [300, 600], sizes: '(min-width: 600px) 600px, 100vw', formats: ['webp'], loading: 'lazy'}) }}
+    {{ asset_svg('icons/dot.svg', {class: 'media__icon', 'aria-hidden': 'true'}) }}
+    <figcaption><a href="{{ asset_url('icons/dot.svg') }}">Media</a>{% if has_plugin('bench-plugin') %} {{ bench_plugin_pin() }}{% endif %}</figcaption>
+</figure>

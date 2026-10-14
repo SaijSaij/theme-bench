@@ -5,6 +5,9 @@
 	"engines": {
 		"node": ">=24"
 	},
+	"imports": {
+		"#shared/*": "./assets/shared/*.js"
+	},
 	"scripts": {
 		"build": "wp-scripts build"
 	},

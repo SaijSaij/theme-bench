@@ -241,6 +241,10 @@ scenarios() {
         scenario "REST error: invalid argument" "/wp-json/bench/v1/events/${events[0]}" rest_invalid_param ",\"method\":\"POST\",\"auth\":true,\"body\":{\"capacity\":\"many\"},\"status\":400"
         scenario "REST error: RestException" /wp-json/bench/v1/events/999999 bench_not_found ',"status":404'
         scenario "editor render route with an invalid block" /wp-json/wp-app-framework/v1/theme-bench/render wp_app_framework_invalid_attributes ",\"method\":\"POST\",\"auth\":true,\"body\":{\"blocks\":[{\"name\":\"bench/card\",\"attributes\":{\"tone\":\"red\"}}]}"
+        # WP-Cron: a task planned for now and the event sweep, which the coverage run made due; wp-cron.php runs both
+        # (or a WP-Cron request WordPress spawned before, which the timer plugin covers as well).
+        scenario "planning a cron task" /wp-json/bench/v1/reindex '\"scheduled\"' ",\"method\":\"POST\",\"body\":{\"postId\":${events[0]}}"
+        scenario "WP-Cron run" /wp-cron.php ""
     fi
     printf ']}'
 }
@@ -310,6 +314,10 @@ if [[ "${mode}" == coverage ]]; then
     for theme in theme-bench-baseline theme-bench; do
         echo "== Coverage of ${theme}"
         wp theme activate "${theme}" >/dev/null
+        if [[ "${theme}" == theme-bench ]]; then
+            # Without the event, the framework schedules it for now on the next request: it is due in the scenarios.
+            wp cron event delete wp_app_framework/cron/theme-bench/sweep >/dev/null
+        fi
         scenarios "${theme}" > "${env_dir}/data/release/scenarios.json"
         compose exec -T wordpress-release php -- /release/scenarios.json < bin/measure.php >/dev/null
     done

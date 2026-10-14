@@ -12,8 +12,11 @@
 declare(strict_types=1);
 
 // Code coverage of the framework (bin/bench --coverage, Xdebug in mode coverage): started before every other plugin,
-// since bin/bench installs this plugin as 0-bench-timer and WordPress loads plugins in alphabetical order.
-if (($_SERVER['HTTP_X_BENCH_COVERAGE'] ?? '') === '1' && function_exists('xdebug_start_code_coverage')) {
+// since bin/bench installs this plugin as 0-bench-timer and WordPress loads plugins in alphabetical order. WP-Cron runs
+// due events in requests to wp-cron.php of its own, also without the header; in mode coverage they are covered too.
+$benchCoverage = ($_SERVER['HTTP_X_BENCH_COVERAGE'] ?? '') === '1'
+    || (defined('DOING_CRON') && function_exists('xdebug_info') && in_array('coverage', (array) xdebug_info('mode'), true));
+if ($benchCoverage && function_exists('xdebug_start_code_coverage')) {
     xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
     register_shutdown_function(static function (): void {
         $covered = [];

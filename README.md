@@ -1,6 +1,6 @@
 # theme-bench
 
-Benchmark of [wp-app-framework](https://github.com/saijsaij/wp-app-framework): what the framework costs per request, where its time goes, and which of its code the scenarios reach. It measures a minimal block theme with the framework against the same theme without it, in the release site of [wp-dev-env](https://github.com/saijsaij/wp-dev-env), and writes a Markdown report. Run it before every release of the framework and compare the reports.
+Benchmark of [wp-app-framework](https://github.com/saijsaij/wp-app-framework): what the framework costs per request, where its time goes, and which of its code the scenarios reach. It measures a minimal block theme with the framework against the same theme without it, in a fresh WordPress of [wp-test-env](https://github.com/saijsaij/wp-test-env), and writes a Markdown report. Run it before every release of the framework and compare the reports.
 
 ## What is measured
 
@@ -15,32 +15,34 @@ On every page of both themes the plugin loads a document view with view data and
 
 ## Running it
 
-Requires wp-dev-env and wp-app-framework checked out next to this repository, and `theme-bench` in `WP_THEMES` of wp-dev-env's `.env` (so `scripts/setup` installs its dependencies and links the framework checkout).
+Requires wp-test-env and wp-app-framework checked out next to this repository, and Docker. `bin/bench` prepares the checkout itself (`bin/prepare` of wp-test-env: Composer and npm dependencies, the framework checkout linked into `vendor/`). The benchmark gets the instance `bench` of wp-test-env to itself; do not run other tests of wp-test-env at the same time, they distort the times.
 
 ```sh
-bin/bench                 # build the ZIPs, install them into the release site, measure, write reports/<time>.md
+bin/bench                 # build the ZIPs, install them into a fresh instance, measure, write reports/<time>.md
 bin/bench --skip-build    # reuse the ZIPs in dist/
+bin/bench --keep          # keep the instance afterwards (WP-CLI: ../wp-test-env/bin/wp bench …; remove: ../wp-test-env/bin/down bench)
 bin/bench --dev           # the theme in development mode (source, vendor/, manifest cache) instead of its release ZIP
 bin/bench --profile       # one Xdebug profile per page: reports/<time>-profile.md
 bin/bench --coverage      # code coverage of the framework over all scenarios: reports/<time>-coverage.md
 ```
 
-`bin/bench` builds the release ZIPs with the framework checkout (`--package-source`), installs them with `scripts/release-test` (WordPress on tmpfs, OPcache on, Xdebug off, `WP_DEBUG` on, no persistent object cache) and creates the content with WP-CLI. It measures in rounds (`--rounds`, default 5): each round activates both themes in turn, warms each scenario up (`--warmup`, default 10) and then requests the scenarios in turn (`--runs`, default 40 per scenario), so a drift of the machine affects all of them alike. The requests run inside the container of the site, one at a time; admin pages with the cookies of one login, REST routes of the editor with an application password. Finally `ab` measures the throughput of some pages (`--requests`, default 300, concurrency 4; 0 skips it).
+`bin/bench` builds the release ZIPs with the framework checkout (`--package-source`), installs them into a fresh instance `bench` of wp-test-env in release mode (`bin/up`: WordPress on tmpfs, plugin and theme directories read-only, OPcache on, Xdebug off, `WP_DEBUG` on, no persistent object cache) and creates the content with WP-CLI. At the end it removes the instance (unless `--keep`). It measures in rounds (`--rounds`, default 5): each round activates both themes in turn, warms each scenario up (`--warmup`, default 10) and then requests the scenarios in turn (`--runs`, default 40 per scenario), so a drift of the machine affects all of them alike. The requests run inside the container of the site, one at a time; admin pages with the cookies of one login, REST routes of the editor with an application password. Finally `ab` measures the throughput of some pages (`--requests`, default 300, concurrency 4; 0 skips it).
 
 The report lists median and p95 of each phase, memory and queries, and the differences: the base load of the framework (framework theme against baseline on the same page), framework blocks against core blocks, queries, and the REST routes and the editor page against their counterparts.
 
 With `--dev`, `bin/bench` builds a copy of the checkout with `build/`, Composer's `vendor/` without development packages and the framework checkout, without `generated/manifest.php`: the framework builds its manifest at run time and keeps it in its development cache, as in development.
 
-With `--profile` or `--coverage`, an additional compose file (`data/bench-xdebug.yml` in wp-dev-env) switches Xdebug to the profiler (for requests with `XDEBUG_TRIGGER`) or to code coverage. The profile run also profiles the block editor page and writes its database queries with their callers (`reports/<time>-queries-<theme>-admin-block-editor.txt`; the timer plugin appends them for requests with `X-Bench-Queries: 1`). `bin/profile-summary.php` shows the time per component (WordPress, framework, Twig, theme) and the functions of the framework and Twig with the largest time; the profiler slows PHP down, so compare shares, not times. `bin/coverage-summary.php` lists per directory of the framework's `src/` the executed lines, the files no request loaded and the functions no request executed. It always reports `src/WpCli/` as not loaded: WP-CLI commands run only in WP-CLI, never in a web request. Likewise the functions of `src/Lifecycle/` that activate, deactivate and uninstall an instance stay unexecuted: they run when a plugin is activated or deleted or the theme is switched, not in the requests the benchmark measures; only the registration of their hooks runs on every request. The next run without these options recreates the site without the compose file.
+With `--profile` or `--coverage`, the instance starts with Xdebug in profiler mode (for requests with `XDEBUG_TRIGGER`) or to code coverage. The profile run also profiles the block editor page and writes its database queries with their callers (`reports/<time>-queries-<theme>-admin-block-editor.txt`; the timer plugin appends them for requests with `X-Bench-Queries: 1`). `bin/profile-summary.php` shows the time per component (WordPress, framework, Twig, theme) and the functions of the framework and Twig with the largest time; the profiler slows PHP down, so compare shares, not times. `bin/coverage-summary.php` lists per directory of the framework's `src/` the executed lines, the files no request loaded and the functions no request executed. It always reports `src/WpCli/` as not loaded: WP-CLI commands run only in WP-CLI, never in a web request. Likewise the functions of `src/Lifecycle/` that activate, deactivate and uninstall an instance stay unexecuted: they run when a plugin is activated or deleted or the theme is switched, not in the requests the benchmark measures; only the registration of their hooks runs on every request.
 
 Two runs differ by up to about 10 % in absolute times on the same machine; the differences between the themes are stable. Compare reports of the same machine only. The query count of the block editor page is higher with the framework theme in the timing than in steady state: the framework theme's admin scenarios between two requests make WordPress refill some caches (patterns, update transients) on the next one; the query log of `--profile` shows the steady state.
 
 ## Development
 
+Run from this directory; the tools image of wp-test-env provides PHP, Composer and Node.
+
 ```sh
-docker compose run --rm tools composer --working-dir=/workspace/theme-bench build-manifest
-docker compose run --rm tools composer --working-dir=/workspace/theme-bench lint   # fix: composer fix
+../wp-test-env/bin/prepare --link saij/wp-app-framework=wp-app-framework theme-bench
+../wp-test-env/bin/tools -w theme-bench composer build-manifest
+../wp-test-env/bin/tools -w theme-bench composer lint   # fix: composer fix
 docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable bin/bench
 ```
-
-Run the first two from the wp-dev-env directory, the last from this one.

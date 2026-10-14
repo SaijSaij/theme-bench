@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Benchmark of wp-app-framework: builds the release ZIPs of theme-bench and
 # bench-plugin, the same theme without the framework (theme-bench-baseline) and
-# the plugin bench-timer, installs them into the release site of wp-dev-env
-# (checked out next to this repository), creates the benchmark content and
-# measures each scenario with both themes. Writes a Markdown report to reports/.
+# the plugin bench-timer, installs them into the instance "bench" of wp-test-env
+# (checked out next to this repository; a fresh WordPress in release mode),
+# creates the benchmark content and measures each scenario with both themes.
+# Writes a Markdown report to reports/ and removes the instance again.
 #
-# Usage: bin/bench [--skip-build] [--dev] [--profile | --coverage] [--rounds <n>] [--runs <n>] [--warmup <n>] [--requests <n>]
+# Usage: bin/bench [--skip-build] [--keep] [--dev] [--profile | --coverage] [--rounds <n>] [--runs <n>] [--warmup <n>] [--requests <n>]
 #   --skip-build  reuse the ZIPs in dist/
+#   --keep        keep the instance "bench" running afterwards (remove it with bin/down bench of wp-test-env)
 #   --dev         install the theme in development mode (source, vendor/, manifest cache) instead of its release ZIP
 #   --profile     instead of timing: one Xdebug profile per page, summarized per component and function
 #   --coverage    instead of timing: Xdebug code coverage of the framework over all scenarios
@@ -17,13 +19,15 @@
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 project="$(pwd)"
-env_dir="${project}/../wp-dev-env"
+env_dir="${project}/../wp-test-env"
+instance=bench
 
 usage() {
-    echo "Usage: bin/bench [--skip-build] [--dev] [--profile | --coverage] [--rounds <n>] [--runs <n>] [--warmup <n>] [--requests <n>]" >&2
+    echo "Usage: bin/bench [--skip-build] [--keep] [--dev] [--profile | --coverage] [--rounds <n>] [--runs <n>] [--warmup <n>] [--requests <n>]" >&2
     exit 2
 }
 skip_build=0
+keep=0
 dev=0
 mode=measure
 rounds=5
@@ -33,6 +37,7 @@ requests=300
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --skip-build) skip_build=1; shift ;;
+        --keep) keep=1; shift ;;
         --dev) dev=1; shift ;;
         --profile) mode=profile; shift ;;
         --coverage) mode=coverage; shift ;;
@@ -43,8 +48,8 @@ while [[ $# -gt 0 ]]; do
         *) usage ;;
     esac
 done
-if [[ ! -x "${env_dir}/scripts/release-test" ]]; then
-    echo "ERROR: wp-dev-env not found next to this repository (${env_dir})." >&2
+if [[ ! -x "${env_dir}/bin/up" ]]; then
+    echo "ERROR: wp-test-env not found next to this repository (${env_dir})." >&2
     exit 1
 fi
 version="$(sed -n 's/^Version: *//p' style.css)"
@@ -55,19 +60,27 @@ plugin_zip="dist/bench-plugin/dist/bench-plugin-${plugin_version}.zip"
 baseline_zip="dist/theme-bench-baseline-${version}.zip"
 timer_zip="dist/bench-timer-${version}.zip"
 
-compose() {
-    (cd "${env_dir}" && docker compose "$@")
-}
 tools() {
-    compose run --rm tools "$@"
+    "${env_dir}/bin/tools" "$@"
+}
+# Runs a command in the WordPress container of the instance: in_site [-u <user>] <command>...
+in_site() {
+    local user=(-u www-data)
+    if [[ "$1" == -u ]]; then
+        user=(-u "$2")
+        shift 2
+    fi
+    "${env_dir}/bin/exec" "${user[@]}" "${instance}" "$@"
 }
 
 if [[ "${skip_build}" == 0 ]]; then
     echo "== Building the ZIPs"
+    # Composer and npm dependencies of the checkout, with the framework checkout linked into vendor/.
+    "${env_dir}/bin/prepare" --link saij/wp-app-framework=wp-app-framework theme-bench
     tools composer --working-dir=/workspace/theme-bench release -- --package-source=saij/wp-app-framework=../wp-app-framework
     # The plugin is released from a copy with a git repository of its own: in this repository the theme's
-    # .gitattributes exclude it (export-ignore). Its vendor/ links the framework checkout like the projects
-    # wp-dev-env links (WP_PACKAGE_LINKS): the release command itself runs from vendor/.
+    # .gitattributes exclude it (export-ignore). Its vendor/ links the framework checkout like the package
+    # links of wp-test-env (bin/prepare --link): the release command itself runs from vendor/.
     tools sh -c "set -e
         cd /workspace/theme-bench && rm -rf dist/bench-plugin && mkdir -p dist/bench-plugin
         git ls-files -co --exclude-standard bench-plugin | sed 's#^bench-plugin/##' | (cd bench-plugin && tar -cf - -T -) | tar -xf - -C dist/bench-plugin
@@ -103,30 +116,25 @@ for zip in "${theme_zip}" "${plugin_zip}" "${baseline_zip}" "${timer_zip}"; do
     [[ -f "${zip}" ]] || { echo "ERROR: ${zip} not found; run without --skip-build." >&2; exit 1; }
 done
 
-echo "== Installing into the release site"
+echo "== Installing into a fresh instance of wp-test-env"
+xdebug=()
 if [[ "${mode}" != measure ]]; then
-    # Xdebug in profile or coverage mode, through an additional compose file in the (ignored) data directory of
-    # wp-dev-env; the next run without --profile or --coverage recreates the site without it.
+    # Xdebug in profile or coverage mode; every run starts a fresh instance, without it when measuring.
     xdebug_mode=profile
     [[ "${mode}" == coverage ]] && xdebug_mode=coverage
-    cat > "${env_dir}/data/bench-xdebug.yml" <<YAML
-services:
-  wordpress-release:
-    environment:
-      XDEBUG_MODE: ${xdebug_mode}
-      XDEBUG_CONFIG: "start_with_request=trigger output_dir=/tmp/profiles profiler_output_name=cachegrind.out.%R.%u"
-YAML
-    export COMPOSE_FILE="compose.yaml:data/bench-xdebug.yml"
-else
-    unset COMPOSE_FILE
+    xdebug=(--xdebug "${xdebug_mode}" --env "XDEBUG_CONFIG=start_with_request=trigger output_dir=/tmp/profiles profiler_output_name=cachegrind.out.%R.%u")
 fi
-"${env_dir}/scripts/release-test" --theme "${project}/${theme_zip}" --plugin "${project}/${timer_zip}" --plugin "${project}/${plugin_zip}"
-cp "${baseline_zip}" "${env_dir}/data/release/"
+if [[ "${keep}" == 0 ]]; then
+    trap '"${env_dir}/bin/down" "${instance}" >/dev/null' EXIT
+fi
+"${env_dir}/bin/up" "${instance}" --theme-zip "${project}/${theme_zip}" --plugin-zip "${project}/${timer_zip}" --plugin-zip "${project}/${plugin_zip}" "${xdebug[@]}"
+container="$("${env_dir}/bin/container" "${instance}")"
+docker cp "${baseline_zip}" "${container}:/tmp/" >/dev/null
 
 wp() {
-    compose exec -T -u www-data wordpress-release wp "$@"
+    "${env_dir}/bin/wp" "${instance}" "$@"
 }
-wp theme install "/release/$(basename "${baseline_zip}")" >/dev/null
+wp theme install "/tmp/$(basename "${baseline_zip}")" >/dev/null
 
 # Creates a page with block markup from stdin and prints its ID.
 page() {
@@ -142,6 +150,9 @@ repeat() {
 }
 echo "== Creating the content"
 admin="$(wp user get 1 --field=user_login)"
+# The password of the cookie login (block editor scenario and profile).
+login_password=bench-login
+wp user update 1 --user_pass="${login_password}" --skip-email >/dev/null
 password="$(wp user application-password create 1 bench --porcelain)"
 printf '<!-- wp:paragraph -->\n<p>Bench</p>\n<!-- /wp:paragraph -->\n' | page bench-empty >/dev/null
 repeat 100 '<!-- wp:heading -->\n<h2 class="wp-block-heading">Title %d</h2>\n<!-- /wp:heading -->\n<!-- wp:paragraph -->\n<p>Body <strong>%d</strong></p>\n<!-- /wp:paragraph -->\n' | page bench-core >/dev/null
@@ -175,7 +186,7 @@ references="$(printf '{"page":%d,"events":[%d,%d,%d],"genre":%d,"author":1,"even
 for ((i = 0; i < 20; i++)); do printf '<!-- wp:bench/references %s /-->\n' "${references}"; done | page bench-references >/dev/null
 # An image, posts with categories and a featured image, for the WordPress functions and the core post classes.
 # shellcheck disable=SC2016 # PHP code.
-compose exec -T -u www-data wordpress-release php -r '$image = imagecreatetruecolor(400, 300); imagepng($image, "/tmp/bench.png");'
+in_site php -r '$image = imagecreatetruecolor(400, 300); imagepng($image, "/tmp/bench.png");'
 image="$(wp media import /tmp/bench.png --title="Bench image" --caption="Bench caption" --alt="Bench alt" --porcelain)"
 for ((i = 1; i <= 10; i++)); do
     post="$(wp post create --post_status=publish --post_title="Post ${i}" --post_content="Text of post ${i}." --porcelain)"
@@ -192,11 +203,7 @@ render_body="$(printf '{"blocks":['; for ((i = 1; i <= 100; i++)); do printf '%s
 items_body='{"items":[{"name":"a","amount":1},{"name":"b","amount":2},{"name":"c","amount":3}]}'
 preview_body='{"content":"<!-- wp:bench/panel {\"title\":\"Preview\"} /-->"}'
 
-set -a
-# shellcheck source=/dev/null
-source "${env_dir}/.env"
-set +a
-base="${WP_RELEASE_URL}"
+base="$(wp option get home)"
 
 # One scenario as JSON: name, path, a text the response must contain, further JSON members.
 scenario() {
@@ -207,7 +214,7 @@ scenarios() {
     local theme="$1"
     separator=
     printf '{"base":"%s","warmup":%d,"runs":%d,"auth":"%s:%s","login":"%s:%s","coverage":%s,"scenarios":[' \
-        "${base}" "${warmup}" "${runs}" "${admin}" "${password}" "${WP_ADMIN_USER}" "${WP_ADMIN_PASSWORD}" "$([[ "${mode}" == coverage ]] && echo true || echo false)"
+        "${base}" "${warmup}" "${runs}" "${admin}" "${password}" "${admin}" "${login_password}" "$([[ "${mode}" == coverage ]] && echo true || echo false)"
     scenario "empty page" /bench-empty/ Bench
     scenario "100 core blocks" /bench-core/ "Title 100"
     scenario "REST route without framework" "/wp-json/bench-plain/v1/ping?value=2" '\"pong\":2'
@@ -262,9 +269,9 @@ scenarios() {
 # log holds this run only.
 check_log() {
     local problems
-    problems="$(compose logs --no-log-prefix wordpress-release 2>&1 | grep -E 'PHP (Fatal error|Parse error|Warning|Notice|Deprecated)|Uncaught' || true)"
+    problems="$("${env_dir}/bin/logs" "${instance}" 2>&1 | grep -E 'PHP (Fatal error|Parse error|Warning|Notice|Deprecated)|Uncaught' || true)"
     if [[ -n "${problems}" ]]; then
-        echo "ERROR: PHP reported problems in the release site during this run:" >&2
+        echo "ERROR: PHP reported problems in the instance during this run:" >&2
         echo "${problems}" | sed -E 's/^\[[^]]*\] \[[^]]*\] \[[^]]*\] \[[^]]*\] //' | cut -c1-400 | sort | uniq -c | sort -rn >&2
         exit 1
     fi
@@ -276,7 +283,7 @@ label="release mode"
 [[ "${dev}" == 1 ]] && label="development mode"
 
 if [[ "${mode}" == profile ]]; then
-    compose exec -T wordpress-release sh -c 'rm -rf /tmp/profiles && mkdir -m 777 /tmp/profiles'
+    in_site -u root sh -c 'rm -rf /tmp/profiles && mkdir -m 777 /tmp/profiles'
     for theme in theme-bench-baseline theme-bench; do
         echo "== Profiling ${theme}"
         wp theme activate "${theme}" >/dev/null
@@ -285,27 +292,27 @@ if [[ "${mode}" == profile ]]; then
         for path in "${pages[@]}"; do
             # Warm OPcache and the caches first; only the last request is profiled.
             for ((i = 0; i < 5; i++)); do
-                compose exec -T wordpress-release curl -fsS -o /dev/null "${base}/${path}/"
+                in_site curl -fsS -o /dev/null "${base}/${path}/"
             done
-            compose exec -T wordpress-release sh -c "rm -f /tmp/profiles/* && curl -fsS -o /dev/null '${base}/${path}/?XDEBUG_TRIGGER=1'"
-            compose exec -T wordpress-release sh -c 'cat /tmp/profiles/cachegrind.out.*' > "reports/${stamp}-profile-${theme}-${path}.cachegrind"
+            in_site -u root sh -c "rm -f /tmp/profiles/* && curl -fsS -o /dev/null '${base}/${path}/?XDEBUG_TRIGGER=1'"
+            in_site -u root sh -c 'cat /tmp/profiles/cachegrind.out.*' > "reports/${stamp}-profile-${theme}-${path}.cachegrind"
         done
         # The block editor page, logged in with a cookie jar of one login.
-        compose exec -T wordpress-release sh -c "rm -f /tmp/bench-cookies && curl -fsS -o /dev/null -c /tmp/bench-cookies -b 'wordpress_test_cookie=WP%20Cookie%20check' \
-            --data-urlencode 'log=${WP_ADMIN_USER}' --data-urlencode 'pwd=${WP_ADMIN_PASSWORD}' -d testcookie=1 '${base}/wp-login.php'"
+        in_site -u root sh -c "rm -f /tmp/bench-cookies && curl -fsS -o /dev/null -c /tmp/bench-cookies -b 'wordpress_test_cookie=WP%20Cookie%20check' \
+            --data-urlencode 'log=${admin}' --data-urlencode 'pwd=${login_password}' -d testcookie=1 '${base}/wp-login.php'"
         editor="${base}/wp-admin/post.php?post=${text_page}&action=edit"
         for ((i = 0; i < 5; i++)); do
-            compose exec -T wordpress-release curl -fsS -o /dev/null -b /tmp/bench-cookies "${editor}"
+            in_site curl -fsS -o /dev/null -b /tmp/bench-cookies "${editor}"
         done
-        compose exec -T wordpress-release sh -c "rm -f /tmp/profiles/* && curl -fsS -o /dev/null -b /tmp/bench-cookies '${editor}&XDEBUG_TRIGGER=1'"
-        compose exec -T wordpress-release sh -c 'cat /tmp/profiles/cachegrind.out.*' > "reports/${stamp}-profile-${theme}-admin-block-editor.cachegrind"
-        compose exec -T wordpress-release curl -fsS -b /tmp/bench-cookies -H 'X-Bench-Queries: 1' "${editor}" \
+        in_site -u root sh -c "rm -f /tmp/profiles/* && curl -fsS -o /dev/null -b /tmp/bench-cookies '${editor}&XDEBUG_TRIGGER=1'"
+        in_site -u root sh -c 'cat /tmp/profiles/cachegrind.out.*' > "reports/${stamp}-profile-${theme}-admin-block-editor.cachegrind"
+        in_site curl -fsS -b /tmp/bench-cookies -H 'X-Bench-Queries: 1' "${editor}" \
             | sed -n '/<!--bench-queries/,/-->/p' > "reports/${stamp}-queries-${theme}-admin-block-editor.txt"
     done
     {
         echo "# Profiles of wp-app-framework"
         echo
-        echo "Xdebug profiles of one request per page after five warm-up requests, release site of wp-dev-env, theme in ${label}."
+        echo "Xdebug profiles of one request per page after five warm-up requests, fresh release-mode instance of wp-test-env, theme in ${label}."
         echo
         for file in "reports/${stamp}"-profile-*.cachegrind; do
             tools php /workspace/theme-bench/bin/profile-summary.php "/workspace/theme-bench/${file}"
@@ -318,7 +325,7 @@ if [[ "${mode}" == profile ]]; then
 fi
 
 if [[ "${mode}" == coverage ]]; then
-    compose exec -T wordpress-release sh -c 'rm -rf /tmp/coverage && mkdir -m 777 /tmp/coverage'
+    in_site -u root sh -c 'rm -rf /tmp/coverage && mkdir -m 777 /tmp/coverage'
     for theme in theme-bench-baseline theme-bench; do
         echo "== Coverage of ${theme}"
         wp theme activate "${theme}" >/dev/null
@@ -328,11 +335,11 @@ if [[ "${mode}" == coverage ]]; then
             # Without the state of the last schema sync, the first request compares the tables again: the sync is covered.
             wp option delete theme_bench_tables >/dev/null
         fi
-        scenarios "${theme}" > "${env_dir}/data/release/scenarios.json"
-        compose exec -T wordpress-release php -- /release/scenarios.json < bin/measure.php >/dev/null
+        scenarios "${theme}" | in_site sh -c 'cat > /tmp/scenarios.json'
+        in_site php -- /tmp/scenarios.json < bin/measure.php >/dev/null
     done
     mkdir -p "reports/${stamp}-coverage"
-    compose cp wordpress-release:/tmp/coverage/. "${project}/reports/${stamp}-coverage/" >/dev/null
+    docker cp "${container}:/tmp/coverage/." "${project}/reports/${stamp}-coverage/" >/dev/null
     tools php /workspace/theme-bench/bin/coverage-summary.php "/workspace/theme-bench/reports/${stamp}-coverage" /workspace/wp-app-framework/src > "reports/${stamp}-coverage.md"
     echo
     echo "Report: reports/${stamp}-coverage.md"
@@ -345,8 +352,8 @@ for ((round = 1; round <= rounds; round++)); do
     for theme in theme-bench-baseline theme-bench; do
         echo "== Round ${round} of ${rounds}: ${theme}"
         wp theme activate "${theme}" >/dev/null
-        scenarios "${theme}" > "${env_dir}/data/release/scenarios.json"
-        compose exec -T wordpress-release php -- /release/scenarios.json < bin/measure.php > "reports/${stamp}-${theme}-round${round}.json"
+        scenarios "${theme}" | in_site sh -c 'cat > /tmp/scenarios.json'
+        in_site php -- /tmp/scenarios.json < bin/measure.php > "reports/${stamp}-${theme}-round${round}.json"
     done
 done
 for theme in theme-bench-baseline theme-bench; do
@@ -357,13 +364,13 @@ for theme in theme-bench-baseline theme-bench; do
         pages=(bench-empty bench-core)
         [[ "${theme}" == theme-bench ]] && pages+=(bench-text bench-cached bench-events)
         for path in "${pages[@]}"; do
-            rps="$(compose exec -T wordpress-release ab -q -n "${requests}" -c 4 "${base}/${path}/" | sed -n 's/^Requests per second: *\([0-9.]*\).*/\1/p')"
+            rps="$(in_site ab -q -n "${requests}" -c 4 "${base}/${path}/" | sed -n 's/^Requests per second: *\([0-9.]*\).*/\1/p')"
             echo "${path} ${rps}" >> "reports/${stamp}-${theme}-ab.txt"
         done
     fi
 done
 
-environment="WordPress $(wp core version), $(compose exec -T wordpress-release php -r 'echo "PHP ", PHP_VERSION, ", OPcache ", ini_get("opcache.enable") ? "on" : "off", " (JIT ", ini_get("opcache.jit"), "), Xdebug loaded with mode ", implode(",", function_exists("xdebug_info") ? xdebug_info("mode") : []) ?: "off", ", WP_DEBUG on, no persistent object cache";'), framework $(git -C ../wp-app-framework rev-parse --short HEAD)$(git -C ../wp-app-framework diff --quiet && echo '' || echo ' (with local changes)'), theme in ${label}"
+environment="WordPress $(wp core version), $(in_site php -r 'echo "PHP ", PHP_VERSION, ", OPcache ", ini_get("opcache.enable") ? "on" : "off", " (JIT ", ini_get("opcache.jit"), "), Xdebug loaded with mode ", implode(",", function_exists("xdebug_info") ? xdebug_info("mode") : []) ?: "off", ", WP_DEBUG on, no persistent object cache";'), framework $(git -C ../wp-app-framework rev-parse --short HEAD)$(git -C ../wp-app-framework diff --quiet && echo '' || echo ' (with local changes)'), theme in ${label}"
 tools php /workspace/theme-bench/bin/report.php "/workspace/theme-bench/reports/${stamp}" "${environment}" "${rounds}" "${runs}" "${warmup}" "${requests}" > "reports/${stamp}.md"
 echo
 echo "Report: reports/${stamp}.md"

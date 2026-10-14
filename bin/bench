@@ -241,6 +241,19 @@ scenarios() {
     printf ']}'
 }
 
+# Fails the run if PHP reported errors, warnings, notices, deprecations or uncaught exceptions while it ran: a
+# response can carry the expected text and still end in a fatal error. The site is recreated for every run, so its
+# log holds this run only.
+check_log() {
+    local problems
+    problems="$(compose logs --no-log-prefix wordpress-release 2>&1 | grep -E 'PHP (Fatal error|Parse error|Warning|Notice|Deprecated)|Uncaught' || true)"
+    if [[ -n "${problems}" ]]; then
+        echo "ERROR: PHP reported problems in the release site during this run:" >&2
+        echo "${problems}" | sed -E 's/^\[[^]]*\] \[[^]]*\] \[[^]]*\] \[[^]]*\] //' | cut -c1-400 | sort | uniq -c | sort -rn >&2
+        exit 1
+    fi
+}
+
 mkdir -p reports
 stamp="$(date +%Y-%m-%d-%H%M%S)"
 label="release mode"
@@ -284,6 +297,7 @@ if [[ "${mode}" == profile ]]; then
     } > "reports/${stamp}-profile.md"
     echo
     echo "Report: reports/${stamp}-profile.md"
+    check_log
     exit 0
 fi
 
@@ -300,6 +314,7 @@ if [[ "${mode}" == coverage ]]; then
     tools php /workspace/theme-bench/bin/coverage-summary.php "/workspace/theme-bench/reports/${stamp}-coverage" /workspace/wp-app-framework/src > "reports/${stamp}-coverage.md"
     echo
     echo "Report: reports/${stamp}-coverage.md"
+    check_log
     exit 0
 fi
 
@@ -330,3 +345,4 @@ environment="WordPress $(wp core version), $(compose exec -T wordpress-release p
 tools php /workspace/theme-bench/bin/report.php "/workspace/theme-bench/reports/${stamp}" "${environment}" "${rounds}" "${runs}" "${warmup}" "${requests}" > "reports/${stamp}.md"
 echo
 echo "Report: reports/${stamp}.md"
+check_log

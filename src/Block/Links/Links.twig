@@ -1,0 +1,5 @@
+<ul {{ block_wrapper_attributes({class: 'links'}) }}>
+    {% for link in [attrs.page, attrs.genre, attrs.image, attrs.external] %}
+        {% if link.url %}<li><a {{ link_attributes(link) }}>{{ link.kind.value }}</a></li>{% endif %}
+    {% endfor %}
+</ul>

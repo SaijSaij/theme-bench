@@ -178,6 +178,9 @@ for ((i = 1; i <= 10; i++)); do
     wp post meta set "${post}" _thumbnail_id "${image}" >/dev/null
 done
 for ((i = 0; i < 10; i++)); do printf '<!-- wp:bench/showcase {"image":%d,"post":%d} /-->\n' "${image}" "${post}"; done | page bench-showcase >/dev/null
+# Links to a page, a term and a media file by ID, and a free URL.
+links="$(printf '{"page":{"url":"","kind":"post","id":%d},"genre":{"url":"","kind":"term","id":%d},"image":{"url":"","kind":"attachment","id":%d},"external":{"url":"https://example.org/","opensInNewTab":true}}' "${text_page}" "${genre}" "${image}")"
+for ((i = 0; i < 20; i++)); do printf '<!-- wp:bench/links %s /-->\n' "${links}"; done | page bench-links >/dev/null
 repeat 5 '<!-- wp:bench/latest /-->\n<!-- wp:bench/variant /-->\n' | page bench-latest >/dev/null
 wp option update bench_general '{"tagline":"Bench tagline","density":"compact","imprint":"<p>Imprint</p>","links":[{"label":"A","url":"https://example.org/a"},{"label":"B","url":"https://example.org/b"}]}' --format=json >/dev/null
 
@@ -214,6 +217,7 @@ scenarios() {
         scenario "100 paragraphs in the post content" /bench-paragraphs/ "Paragraph <em>100</em>"
         scenario "20 banners (settings) and bridges (plugin API)" /bench-settings/ "Bench tagline"
         scenario "20 reference blocks" /bench-references/ "Event 1"
+        scenario "20 blocks with links" /bench-links/ "/bench-text/"
         scenario "event query" /bench-events/ "Event 25"
         scenario "event query, cached" /bench-events-cached/ "Event 25"
         scenario "event archive with excerpts" /event/ "Event 30 with a description"
@@ -265,7 +269,7 @@ if [[ "${mode}" == profile ]]; then
         echo "== Profiling ${theme}"
         wp theme activate "${theme}" >/dev/null
         pages=(bench-empty bench-core)
-        [[ "${theme}" == theme-bench ]] && pages+=(bench-text bench-card bench-panels bench-paragraphs bench-settings bench-references bench-events event)
+        [[ "${theme}" == theme-bench ]] && pages+=(bench-text bench-card bench-panels bench-paragraphs bench-settings bench-references bench-links bench-events event)
         for path in "${pages[@]}"; do
             # Warm OPcache and the caches first; only the last request is profiled.
             for ((i = 0; i < 5; i++)); do

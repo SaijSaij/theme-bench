@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Saij\ThemeBench\Block\Showcase;
 
-use Saij\WpAppFramework\Block\Image;
+use Saij\WpAppFramework\Value\Image;
 use Saij\WpAppFramework\Value\PostReference;
 
 final readonly class ShowcaseAttributes

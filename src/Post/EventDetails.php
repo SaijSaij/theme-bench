@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Saij\ThemeBench\Post;
 
-use Saij\WpAppFramework\Block\RichText;
 use Saij\WpAppFramework\Post\PostMeta;
+use Saij\WpAppFramework\Value\RichText;
 
 #[PostMeta('details', title: 'Event details', postTypes: [Event::class])]
 final class EventDetails

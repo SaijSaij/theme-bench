@@ -26,7 +26,7 @@ final readonly class Maintenance
         delete_transient('bench_nightly');
     }
 
-    #[CronTask]
+    #[CronTask('reindex')]
     public function reindex(Reindex $task): void
     {
         clean_post_cache($task->postId);

@@ -1,10 +1,8 @@
 /**
- * Builds the framework scripts of the plugin (settings page) into build/ (see
- * vendor/saij/wp-app-framework/webpack.config.js); the plugin has no scripts of its own.
+ * Builds the framework scripts of the plugin (settings page) into build/ (see the
+ * webpack helper of the framework, `@saij/wp-app-framework/webpack`); the plugin has no scripts of its own.
  */
-module.exports = require( './vendor/saij/wp-app-framework/webpack.config.js' )(
-	{
-		slug: 'bench-plugin',
-		root: __dirname,
-	}
-);
+module.exports = require( '@saij/wp-app-framework/webpack' )( {
+	slug: 'bench-plugin',
+	root: __dirname,
+} );

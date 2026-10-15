@@ -2,13 +2,7 @@
     "name": "saij/bench-plugin",
     "description": "Plugin of the benchmark of wp-app-framework.",
     "type": "wordpress-plugin",
-    "license": "proprietary",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/saijsaij/wp-app-framework"
-        }
-    ],
+    "license": "GPL-2.0-or-later",
     "require": {
         "php": ">=8.5",
         "saij/wp-app-framework": "dev-main"

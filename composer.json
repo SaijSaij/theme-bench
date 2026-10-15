@@ -2,13 +2,7 @@
     "name": "saij/theme-bench",
     "description": "Benchmark theme for wp-app-framework: measures the cost of the framework per request against the same theme without it.",
     "type": "wordpress-theme",
-    "license": "proprietary",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/saijsaij/wp-app-framework"
-        }
-    ],
+    "license": "GPL-2.0-or-later",
     "require": {
         "php": ">=8.5",
         "saij/wp-app-framework": "dev-main"

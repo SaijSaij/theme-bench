@@ -46,3 +46,7 @@ Run from this directory; the tools image of wp-test-env provides PHP, Composer a
 ../wp-test-env/bin/tools -w theme-bench composer lint   # fix: composer fix
 docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable bin/bench
 ```
+
+## License
+
+[GPL-2.0-or-later](LICENSE), like WordPress.

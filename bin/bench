@@ -334,6 +334,9 @@ if [[ "${mode}" == coverage ]]; then
             wp cron event delete wp_app_framework/cron/theme-bench/sweep >/dev/null
             # Without the state of the last schema sync, the first request compares the tables again: the sync is covered.
             wp option delete theme_bench_tables >/dev/null
+            # A Twig cache of an older release, removed by the clean-up event, which is due again without its schedule.
+            wp cron event delete wp_app_framework/cache/clean_up/theme-bench >/dev/null
+            in_site sh -c 'mkdir -p /var/www/html/wp-content/cache/theme-bench/twig/0000000000000000/ab && touch /var/www/html/wp-content/cache/theme-bench/twig/0000000000000000/ab/old.php'
         fi
         scenarios "${theme}" | in_site sh -c 'cat > /tmp/scenarios.json'
         in_site php -- /tmp/scenarios.json < bin/measure.php >/dev/null

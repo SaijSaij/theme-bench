@@ -1,0 +1,5 @@
+<ul {{ block_wrapper_attributes({class: 'event-loop'}) }}>
+    {% for item in items %}
+        <li{{ repeater_item(item) }}>{{ item.content|raw }}</li>
+    {% endfor %}
+</ul>

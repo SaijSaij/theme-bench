@@ -182,6 +182,7 @@ printf '<!-- wp:bench/event-list {"minCapacity":10,"genre":%d} /-->\n' "${genre}
 # shellcheck disable=SC2016 # PHP code.
 log_row="$(wp eval 'wp_set_current_user(1); $request = new WP_REST_Request("POST", "/bench/v1/log/seed"); $request->set_param("count", 200); $response = rest_do_request($request); if ($response->is_error()) { WP_CLI::error($response->as_error()->get_error_message()); } echo $response->get_data()["first"];')"
 printf '<!-- wp:bench/event-list {"minCapacity":10,"genre":%d,"cached":true} /-->\n' "${genre}" | page bench-events-cached >/dev/null
+printf '<!-- wp:bench/event-loop -->\n<!-- wp:bench/event-card /-->\n<!-- wp:post-title /-->\n<!-- /wp:bench/event-loop -->\n' | page bench-repeater >/dev/null
 references="$(printf '{"page":%d,"events":[%d,%d,%d],"genre":%d,"author":1,"event":%d}' "${text_page}" "${events[0]}" "${events[1]}" "${events[2]}" "${genre}" "${events[3]}")"
 for ((i = 0; i < 20; i++)); do printf '<!-- wp:bench/references %s /-->\n' "${references}"; done | page bench-references >/dev/null
 # An image, posts with categories and a featured image, for the WordPress functions and the core post classes.
@@ -231,6 +232,7 @@ scenarios() {
         scenario "20 blocks with links" /bench-links/ "/bench-text/"
         scenario "event query" /bench-events/ "Event 25"
         scenario "event query, cached" /bench-events-cached/ "Event 25"
+        scenario "repeater with 20 events" /bench-repeater/ "Card of Event"
         scenario "event archive with excerpts" /event/ "Event 30 with a description"
         scenario "REST route of the framework" "/wp-json/bench/v1/ping?value=2" '\"pong\":2'
         scenario "REST route with value objects" /wp-json/bench/v1/items '\"total\":6' ",\"method\":\"POST\",\"body\":${items_body}"

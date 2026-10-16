@@ -1,6 +1,6 @@
 # CLAUDE.md – theme-bench
 
-Benchmark of [wp-app-framework](https://github.com/saijsaij/wp-app-framework): a theme with the framework (slug `theme-bench`, namespace `bench`, PHP `Saij\ThemeBench\`), the same theme without it (`baseline/`), a plugin with a framework instance (`bench-plugin/`, namespace `bench-plugin`, PHP `Saij\BenchPlugin\`), a timer plugin (`timer/`) and the script `bin/bench` (measurement, `--dev`, `--profile`, `--coverage`). The README explains scenarios, phases and options. Framework principles and rules: the framework's CLAUDE.md.
+Benchmark of [wp-app-framework](https://github.com/saijsaij/wp-app-framework): a theme with the framework (slug `theme-bench`, namespace `bench`, PHP `Saij\ThemeBench\`), the same theme without it (`baseline/`), a plugin with a framework instance (`bench-plugin/`, namespace `bench-plugin`, PHP `Saij\BenchPlugin\`), a timer plugin (`timer/`) and the script `bin/bench` (measurement, `--dev`, `--profile`, `--coverage`). The README explains scenarios, phases and options. Framework principles, conventions and testing rules: the [developer documentation](https://saijsaij.github.io/wp-app-framework/next/development/) (in the framework checkout `docs/content/development/`) and the framework's CLAUDE.md.
 
 ## Rules
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Media;
+namespace WebCodingCat\ThemeBench\Block\Media;
 
-use Saij\WpAppFramework\Block\Block;
-use Saij\WpAppFramework\Block\BlockCategory;
-use Saij\WpAppFramework\Twig\TemplateRenderer;
-use Saij\WpAppFramework\View\ViewData;
+use WebCodingCat\WpAppFramework\Block\Block;
+use WebCodingCat\WpAppFramework\Block\BlockCategory;
+use WebCodingCat\WpAppFramework\Twig\TemplateRenderer;
+use WebCodingCat\WpAppFramework\View\ViewData;
 
 /**
  * Static assets: a versioned URL, an image with variants, an inline SVG and an asset of the plugin the theme

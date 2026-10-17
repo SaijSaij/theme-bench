@@ -32,7 +32,7 @@ function bench_component(string $file): string
 {
     return match (true) {
         // vendor-prefixed/ in release mode, vendor/ in development mode.
-        preg_match('#/vendor(-prefixed)?/saij/wp-app-framework/#', $file) === 1 => 'framework',
+        preg_match('#/vendor(-prefixed)?/webcodingcat/wp-app-framework/#', $file) === 1 => 'framework',
         preg_match('#/vendor(-prefixed)?/twig/#', $file) === 1 || str_contains($file, '/cache/theme-bench/twig/') => 'Twig (with compiled templates)',
         preg_match('#/vendor(-prefixed)?/#', $file) === 1 => 'Composer and other dependencies',
         str_contains($file, '/themes/theme-bench/') => 'theme',
@@ -132,7 +132,7 @@ foreach (array_slice(bench_arguments(), 1) as $path) {
         arsort($costs);
         echo sprintf("\nFunctions of the framework and Twig, %s:\n\n| Function | ms | share |\n|---|---:|---:|\n", $description);
         foreach (array_slice($costs, 0, 10, true) as $function => $cost) {
-            $short = preg_replace('/^Saij\\\\ThemeBench\\\\Vendor\\\\/', '', $function);
+            $short = preg_replace('/^WebCodingCat\\\\ThemeBench\\\\Vendor\\\\/', '', $function);
             echo sprintf("| `%s` | %s | %.1f %% |\n", $short, $ms($cost), 100 * $cost / $total);
         }
     }

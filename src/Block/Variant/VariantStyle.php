@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Variant;
+namespace WebCodingCat\ThemeBench\Block\Variant;
 
-use Saij\WpAppFramework\Hook\Hook;
+use WebCodingCat\WpAppFramework\Hook\Hook;
 
 /**
  * Registers the style of the block Variant before blocks render.

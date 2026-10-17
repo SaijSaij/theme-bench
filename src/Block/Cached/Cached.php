@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Cached;
+namespace WebCodingCat\ThemeBench\Block\Cached;
 
-use Saij\ThemeBench\Block\Text\TextAttributes;
-use Saij\WpAppFramework\Block\Block;
-use Saij\WpAppFramework\Block\BlockCategory;
-use Saij\WpAppFramework\Cache\Cache;
-use Saij\WpAppFramework\Twig\TemplateRenderer;
+use WebCodingCat\ThemeBench\Block\Text\TextAttributes;
+use WebCodingCat\WpAppFramework\Block\Block;
+use WebCodingCat\WpAppFramework\Block\BlockCategory;
+use WebCodingCat\WpAppFramework\Cache\Cache;
+use WebCodingCat\WpAppFramework\Twig\TemplateRenderer;
 
 /**
  * The text block with #[Cache]: after the first request its output comes from the cache store.

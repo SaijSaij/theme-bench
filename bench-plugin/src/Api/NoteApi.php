@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\BenchPlugin\Api;
+namespace WebCodingCat\BenchPlugin\Api;
 
-use Saij\WpAppFramework\Api\PublicApi;
+use WebCodingCat\WpAppFramework\Api\PublicApi;
 
 #[PublicApi]
 final class NoteApi

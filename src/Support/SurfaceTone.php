@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Support;
+namespace WebCodingCat\ThemeBench\Support;
 
 enum SurfaceTone: string
 {

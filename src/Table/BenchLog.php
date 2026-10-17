@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Table;
+namespace WebCodingCat\ThemeBench\Table;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use Saij\WpAppFramework\Table\AbstractRow;
-use Saij\WpAppFramework\Table\Indexed;
-use Saij\WpAppFramework\Table\PrimaryKey;
-use Saij\WpAppFramework\Table\Table;
+use WebCodingCat\WpAppFramework\Table\AbstractRow;
+use WebCodingCat\WpAppFramework\Table\Indexed;
+use WebCodingCat\WpAppFramework\Table\PrimaryKey;
+use WebCodingCat\WpAppFramework\Table\Table;
 
 /**
  * A row of the table wp_bench_log: a typical log with an enum, a nullable column, a time and an index of two columns.

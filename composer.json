@@ -1,15 +1,15 @@
 {
-    "name": "saij/theme-bench",
+    "name": "webcodingcat/theme-bench",
     "description": "Benchmark theme for wp-app-framework: measures the cost of the framework per request against the same theme without it.",
     "type": "wordpress-theme",
     "license": "GPL-2.0-or-later",
     "require": {
         "php": ">=8.5",
-        "saij/wp-app-framework": "dev-main"
+        "webcodingcat/wp-app-framework": "dev-main"
     },
     "autoload": {
         "psr-4": {
-            "Saij\\ThemeBench\\": "src/"
+            "WebCodingCat\\ThemeBench\\": "src/"
         }
     },
     "scripts": {
@@ -30,8 +30,8 @@
         },
         "strauss": {
             "target_directory": "vendor-prefixed",
-            "namespace_prefix": "Saij\\ThemeBench\\Vendor\\",
-            "classmap_prefix": "Saij_ThemeBench_Vendor_",
+            "namespace_prefix": "WebCodingCat\\ThemeBench\\Vendor\\",
+            "classmap_prefix": "WebCodingCat_ThemeBench_Vendor_",
             "include_root_autoload": true,
             "update_call_sites": [
                 "src",

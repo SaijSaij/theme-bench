@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Text;
+namespace WebCodingCat\ThemeBench\Block\Text;
 
-use Saij\WpAppFramework\Value\PlainText;
-use Saij\WpAppFramework\Value\RichText;
+use WebCodingCat\WpAppFramework\Value\PlainText;
+use WebCodingCat\WpAppFramework\Value\RichText;
 
 final readonly class TextAttributes
 {

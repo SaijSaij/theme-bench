@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Paragraph;
+namespace WebCodingCat\ThemeBench\Block\Paragraph;
 
-use Saij\WpAppFramework\Value\RichText;
+use WebCodingCat\WpAppFramework\Value\RichText;
 
 final readonly class ParagraphAttributes
 {

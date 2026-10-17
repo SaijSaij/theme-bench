@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Tabs;
+namespace WebCodingCat\ThemeBench\Block\Tabs;
 
-use Saij\WpAppFramework\Block\Block;
-use Saij\WpAppFramework\Block\BlockCategory;
-use Saij\WpAppFramework\Block\Context;
-use Saij\WpAppFramework\Twig\TemplateRenderer;
+use WebCodingCat\WpAppFramework\Block\Block;
+use WebCodingCat\WpAppFramework\Block\BlockCategory;
+use WebCodingCat\WpAppFramework\Block\Context;
+use WebCodingCat\WpAppFramework\Twig\TemplateRenderer;
 
 #[Block('tab', title: 'Bench tab', category: BlockCategory::Design, parent: [Tabs::class])]
 final readonly class Tab

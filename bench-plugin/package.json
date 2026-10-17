@@ -12,7 +12,7 @@
 		"build": "wp-scripts build"
 	},
 	"devDependencies": {
-		"@saij/wp-app-framework": "file:vendor/saij/wp-app-framework",
+		"@webcodingcat/wp-app-framework": "file:vendor/webcodingcat/wp-app-framework",
 		"@wordpress/scripts": "^36.1.0"
 	}
 }

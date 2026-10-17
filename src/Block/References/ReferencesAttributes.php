@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\References;
+namespace WebCodingCat\ThemeBench\Block\References;
 
-use Saij\ThemeBench\Post\Event;
-use Saij\WpAppFramework\Value\PostReference;
-use Saij\WpAppFramework\Value\TermReference;
-use Saij\WpAppFramework\Value\UserReference;
+use WebCodingCat\ThemeBench\Post\Event;
+use WebCodingCat\WpAppFramework\Value\PostReference;
+use WebCodingCat\WpAppFramework\Value\TermReference;
+use WebCodingCat\WpAppFramework\Value\UserReference;
 
 final readonly class ReferencesAttributes
 {

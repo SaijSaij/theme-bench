@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Rest;
+namespace WebCodingCat\ThemeBench\Rest;
 
 final readonly class Item
 {

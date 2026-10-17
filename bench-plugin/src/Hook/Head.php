@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\BenchPlugin\Hook;
+namespace WebCodingCat\BenchPlugin\Hook;
 
-use Saij\WpAppFramework\Hook\Hook;
+use WebCodingCat\WpAppFramework\Hook\Hook;
 
 final class Head
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Card;
+namespace WebCodingCat\ThemeBench\Block\Card;
 
-use Saij\WpAppFramework\Value\Color;
-use Saij\WpAppFramework\Value\ListOf;
-use Saij\WpAppFramework\Value\PlainText;
+use WebCodingCat\WpAppFramework\Value\Color;
+use WebCodingCat\WpAppFramework\Value\ListOf;
+use WebCodingCat\WpAppFramework\Value\PlainText;
 
 final readonly class CardAttributes
 {

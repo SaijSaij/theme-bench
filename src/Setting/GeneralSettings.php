@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Setting;
+namespace WebCodingCat\ThemeBench\Setting;
 
-use Saij\WpAppFramework\Setting\SettingsGroup;
-use Saij\WpAppFramework\Value\ListOf;
-use Saij\WpAppFramework\Value\RichText;
+use WebCodingCat\WpAppFramework\Setting\SettingsGroup;
+use WebCodingCat\WpAppFramework\Value\ListOf;
+use WebCodingCat\WpAppFramework\Value\RichText;
 
 #[SettingsGroup('general', title: 'General')]
 final readonly class GeneralSettings

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Hook;
+namespace WebCodingCat\ThemeBench\Hook;
 
-use Saij\WpAppFramework\Hook\Hook;
+use WebCodingCat\WpAppFramework\Hook\Hook;
 
 /**
  * Lets a request choose the cache backend with ?bench-backend=transient, so the benchmark reaches every backend.

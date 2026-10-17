@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\EventList;
+namespace WebCodingCat\ThemeBench\Block\EventList;
 
-use Saij\WpAppFramework\Value\TermReference;
+use WebCodingCat\WpAppFramework\Value\TermReference;
 
 final readonly class EventListAttributes
 {

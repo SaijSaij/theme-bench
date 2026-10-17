@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Tabs;
+namespace WebCodingCat\ThemeBench\Block\Tabs;
 
-use Saij\WpAppFramework\Block\ProvidesContext;
+use WebCodingCat\WpAppFramework\Block\ProvidesContext;
 
 final readonly class TabsAttributes
 {

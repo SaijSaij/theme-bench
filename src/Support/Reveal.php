@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Support;
+namespace WebCodingCat\ThemeBench\Support;
 
-use Saij\WpAppFramework\Block\Support\BlockSupport;
-use Saij\WpAppFramework\Block\Support\SupportGroup;
+use WebCodingCat\WpAppFramework\Block\Support\BlockSupport;
+use WebCodingCat\WpAppFramework\Block\Support\SupportGroup;
 
 #[BlockSupport('reveal', label: 'Reveal', group: SupportGroup::Settings)]
 final class Reveal

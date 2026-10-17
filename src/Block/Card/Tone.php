@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Card;
+namespace WebCodingCat\ThemeBench\Block\Card;
 
 enum Tone: string
 {

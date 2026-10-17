@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Saij\BenchPlugin\Script;
+namespace WebCodingCat\BenchPlugin\Script;
 
-use Saij\WpAppFramework\Hook\Hook;
-use Saij\WpAppFramework\View\ViewData;
+use WebCodingCat\WpAppFramework\Hook\Hook;
+use WebCodingCat\WpAppFramework\View\ViewData;
 
 /**
  * View data of the plugin's document view and editor script.

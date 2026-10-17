@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Support;
+namespace WebCodingCat\ThemeBench\Support;
 
-use Saij\WpAppFramework\Block\Support\BlockSupport;
+use WebCodingCat\WpAppFramework\Block\Support\BlockSupport;
 
 #[BlockSupport('surface', label: 'Surface')]
 final class Surface

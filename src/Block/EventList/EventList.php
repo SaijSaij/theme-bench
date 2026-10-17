@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\EventList;
+namespace WebCodingCat\ThemeBench\Block\EventList;
 
-use Saij\ThemeBench\Post\Event;
-use Saij\ThemeBench\Post\EventDetailsFields;
-use Saij\ThemeBench\Post\EventKind;
-use Saij\ThemeBench\Post\Genre;
-use Saij\WpAppFramework\Block\Block;
-use Saij\WpAppFramework\Block\BlockCategory;
-use Saij\WpAppFramework\Query\Any;
-use Saij\WpAppFramework\Query\PostOrder;
-use Saij\WpAppFramework\Query\Terms;
-use Saij\WpAppFramework\Twig\TemplateRenderer;
+use WebCodingCat\ThemeBench\Post\Event;
+use WebCodingCat\ThemeBench\Post\EventDetailsFields;
+use WebCodingCat\ThemeBench\Post\EventKind;
+use WebCodingCat\ThemeBench\Post\Genre;
+use WebCodingCat\WpAppFramework\Block\Block;
+use WebCodingCat\WpAppFramework\Block\BlockCategory;
+use WebCodingCat\WpAppFramework\Query\Any;
+use WebCodingCat\WpAppFramework\Query\PostOrder;
+use WebCodingCat\WpAppFramework\Query\Terms;
+use WebCodingCat\WpAppFramework\Twig\TemplateRenderer;
 
 /**
  * A query of post objects with conditions on meta fields and terms, sorted by a meta field; optionally cached.

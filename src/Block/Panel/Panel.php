@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Panel;
+namespace WebCodingCat\ThemeBench\Block\Panel;
 
-use Saij\ThemeBench\Support\Reveal;
-use Saij\ThemeBench\Support\Surface;
-use Saij\WpAppFramework\Block\Block;
-use Saij\WpAppFramework\Block\BlockCategory;
-use Saij\WpAppFramework\Block\Support\UseSupport;
-use Saij\WpAppFramework\Twig\TemplateRenderer;
+use WebCodingCat\ThemeBench\Support\Reveal;
+use WebCodingCat\ThemeBench\Support\Surface;
+use WebCodingCat\WpAppFramework\Block\Block;
+use WebCodingCat\WpAppFramework\Block\BlockCategory;
+use WebCodingCat\WpAppFramework\Block\Support\UseSupport;
+use WebCodingCat\WpAppFramework\Twig\TemplateRenderer;
 
 /**
  * A block with two block supports and view scripts (its own and the support's), a template function and a filter.

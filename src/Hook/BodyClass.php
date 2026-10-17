@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Hook;
+namespace WebCodingCat\ThemeBench\Hook;
 
-use Saij\ThemeBench\Setting\GeneralSettings;
-use Saij\WpAppFramework\Hook\Hook;
+use WebCodingCat\ThemeBench\Setting\GeneralSettings;
+use WebCodingCat\WpAppFramework\Hook\Hook;
 
 /**
  * A filter and an action on every page; the service gets a settings group injected.

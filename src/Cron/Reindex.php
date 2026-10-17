@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Cron;
+namespace WebCodingCat\ThemeBench\Cron;
 
 /**
  * A one-time task: a post whose caches are cleaned.

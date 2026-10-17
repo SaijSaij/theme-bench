@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Setting;
+namespace WebCodingCat\ThemeBench\Setting;
 
 enum Density: string
 {

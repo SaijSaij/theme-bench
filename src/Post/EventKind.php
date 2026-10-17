@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Post;
+namespace WebCodingCat\ThemeBench\Post;
 
 enum EventKind: string
 {

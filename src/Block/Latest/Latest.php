@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Latest;
+namespace WebCodingCat\ThemeBench\Block\Latest;
 
-use Saij\WpAppFramework\Block\Block;
-use Saij\WpAppFramework\Block\BlockCategory;
-use Saij\WpAppFramework\Post\Category;
-use Saij\WpAppFramework\Post\Page;
-use Saij\WpAppFramework\Post\Post;
-use Saij\WpAppFramework\Query\All;
-use Saij\WpAppFramework\Query\PostOrder;
-use Saij\WpAppFramework\Query\Terms;
-use Saij\WpAppFramework\Twig\TemplateRenderer;
+use WebCodingCat\WpAppFramework\Block\Block;
+use WebCodingCat\WpAppFramework\Block\BlockCategory;
+use WebCodingCat\WpAppFramework\Post\Category;
+use WebCodingCat\WpAppFramework\Post\Page;
+use WebCodingCat\WpAppFramework\Post\Post;
+use WebCodingCat\WpAppFramework\Query\All;
+use WebCodingCat\WpAppFramework\Query\PostOrder;
+use WebCodingCat\WpAppFramework\Query\Terms;
+use WebCodingCat\WpAppFramework\Twig\TemplateRenderer;
 
 /**
  * Posts and pages of WordPress through the framework's post classes: a page of posts, a count and the first page.

@@ -36,11 +36,11 @@ function bench_coverage(string $directory): array
     foreach (glob($directory . '/*.json') ?: [] as $file) {
         $data = json_decode((string) file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
         foreach (is_array($data) ? $data : [] as $path => $lines) {
-            $position = strpos((string) $path, '/saij/wp-app-framework/src/');
+            $position = strpos((string) $path, '/webcodingcat/wp-app-framework/src/');
             if ($position === false || !is_array($lines)) {
                 continue;
             }
-            $relative = substr((string) $path, $position + strlen('/saij/wp-app-framework/src/'));
+            $relative = substr((string) $path, $position + strlen('/webcodingcat/wp-app-framework/src/'));
             foreach ($lines as $line => $state) {
                 // Xdebug: 1 executed, -1 executable but not executed, -2 dead code.
                 if ($state === -2) {

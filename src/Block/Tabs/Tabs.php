@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Tabs;
+namespace WebCodingCat\ThemeBench\Block\Tabs;
 
-use Saij\WpAppFramework\Block\Block;
-use Saij\WpAppFramework\Block\BlockCategory;
-use Saij\WpAppFramework\Block\InnerBlocks;
-use Saij\WpAppFramework\Block\Supports;
-use Saij\WpAppFramework\Twig\TemplateRenderer;
+use WebCodingCat\WpAppFramework\Block\Block;
+use WebCodingCat\WpAppFramework\Block\BlockCategory;
+use WebCodingCat\WpAppFramework\Block\InnerBlocks;
+use WebCodingCat\WpAppFramework\Block\Supports;
+use WebCodingCat\WpAppFramework\Twig\TemplateRenderer;
 
 /**
  * A container that passes a value to its tabs (block context).

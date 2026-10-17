@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Cron;
+namespace WebCodingCat\ThemeBench\Cron;
 
 use DateTimeImmutable;
-use Saij\WpAppFramework\Cron\CronScheduler;
-use Saij\WpAppFramework\Rest\HttpMethod;
-use Saij\WpAppFramework\Rest\Permission\PublicAccess;
-use Saij\WpAppFramework\Rest\RestController;
-use Saij\WpAppFramework\Rest\RestRoute;
+use WebCodingCat\WpAppFramework\Cron\CronScheduler;
+use WebCodingCat\WpAppFramework\Rest\HttpMethod;
+use WebCodingCat\WpAppFramework\Rest\Permission\PublicAccess;
+use WebCodingCat\WpAppFramework\Rest\RestController;
+use WebCodingCat\WpAppFramework\Rest\RestRoute;
 
 /**
  * Plans a task for now (bin/bench --coverage); the next WP-Cron run handles it.

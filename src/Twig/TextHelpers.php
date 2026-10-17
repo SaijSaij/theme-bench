@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Twig;
+namespace WebCodingCat\ThemeBench\Twig;
 
-use Saij\WpAppFramework\Twig\TemplateFilter;
-use Saij\WpAppFramework\Twig\TemplateFunction;
+use WebCodingCat\WpAppFramework\Twig\TemplateFilter;
+use WebCodingCat\WpAppFramework\Twig\TemplateFunction;
 
 final class TextHelpers
 {

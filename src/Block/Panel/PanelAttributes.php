@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Panel;
+namespace WebCodingCat\ThemeBench\Block\Panel;
 
-use Saij\WpAppFramework\Value\PlainText;
+use WebCodingCat\WpAppFramework\Value\PlainText;
 
 final readonly class PanelAttributes
 {

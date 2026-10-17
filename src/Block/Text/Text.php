@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Text;
+namespace WebCodingCat\ThemeBench\Block\Text;
 
-use Saij\WpAppFramework\Block\Block;
-use Saij\WpAppFramework\Block\BlockCategory;
-use Saij\WpAppFramework\Twig\TemplateRenderer;
+use WebCodingCat\WpAppFramework\Block\Block;
+use WebCodingCat\WpAppFramework\Block\BlockCategory;
+use WebCodingCat\WpAppFramework\Twig\TemplateRenderer;
 
 /**
  * A heading and a paragraph: the counterpart of core/heading plus core/paragraph.

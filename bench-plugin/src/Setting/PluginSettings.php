@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\BenchPlugin\Setting;
+namespace WebCodingCat\BenchPlugin\Setting;
 
-use Saij\WpAppFramework\Setting\SettingsGroup;
+use WebCodingCat\WpAppFramework\Setting\SettingsGroup;
 
 #[SettingsGroup('options', title: 'Options')]
 final readonly class PluginSettings

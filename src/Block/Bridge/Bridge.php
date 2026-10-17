@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Bridge;
+namespace WebCodingCat\ThemeBench\Block\Bridge;
 
-use Saij\BenchPlugin\Api\NoteApi;
-use Saij\WpAppFramework\Api\PluginApi;
-use Saij\WpAppFramework\Block\Block;
-use Saij\WpAppFramework\Block\BlockCategory;
-use Saij\WpAppFramework\Twig\TemplateRenderer;
+use WebCodingCat\BenchPlugin\Api\NoteApi;
+use WebCodingCat\WpAppFramework\Api\PluginApi;
+use WebCodingCat\WpAppFramework\Block\Block;
+use WebCodingCat\WpAppFramework\Block\BlockCategory;
+use WebCodingCat\WpAppFramework\Twig\TemplateRenderer;
 
 /**
  * The public API and a public template function of the plugin bench-plugin, another framework instance.

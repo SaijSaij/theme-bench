@@ -1,15 +1,15 @@
 {
-    "name": "saij/bench-plugin",
+    "name": "webcodingcat/bench-plugin",
     "description": "Plugin of the benchmark of wp-app-framework.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "require": {
         "php": ">=8.5",
-        "saij/wp-app-framework": "dev-main"
+        "webcodingcat/wp-app-framework": "dev-main"
     },
     "autoload": {
         "psr-4": {
-            "Saij\\BenchPlugin\\": "src/"
+            "WebCodingCat\\BenchPlugin\\": "src/"
         }
     },
     "scripts": {
@@ -22,8 +22,8 @@
         },
         "strauss": {
             "target_directory": "vendor-prefixed",
-            "namespace_prefix": "Saij\\BenchPlugin\\Vendor\\",
-            "classmap_prefix": "Saij_BenchPlugin_Vendor_",
+            "namespace_prefix": "WebCodingCat\\BenchPlugin\\Vendor\\",
+            "classmap_prefix": "WebCodingCat_BenchPlugin_Vendor_",
             "include_root_autoload": true,
             "update_call_sites": [
                 "src",

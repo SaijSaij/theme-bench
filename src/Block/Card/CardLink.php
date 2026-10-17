@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Card;
+namespace WebCodingCat\ThemeBench\Block\Card;
 
-use Saij\WpAppFramework\Value\PlainText;
-use Saij\WpAppFramework\Value\Url;
+use WebCodingCat\WpAppFramework\Value\PlainText;
+use WebCodingCat\WpAppFramework\Value\Url;
 
 final readonly class CardLink
 {

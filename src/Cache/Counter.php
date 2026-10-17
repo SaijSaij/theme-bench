@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Cache;
+namespace WebCodingCat\ThemeBench\Cache;
 
-use Saij\ThemeBench\Post\Event;
-use Saij\ThemeBench\Rest\Item;
-use Saij\WpAppFramework\Cache\CacheStore;
-use Saij\WpAppFramework\Cache\Tag\PostTypeTag;
-use Saij\WpAppFramework\Rest\HttpMethod;
-use Saij\WpAppFramework\Rest\Permission\Callback;
-use Saij\WpAppFramework\Rest\Permission\PublicAccess;
-use Saij\WpAppFramework\Rest\RestController;
-use Saij\WpAppFramework\Rest\RestRoute;
-use Saij\WpAppFramework\Value\ListOf;
+use WebCodingCat\ThemeBench\Post\Event;
+use WebCodingCat\ThemeBench\Rest\Item;
+use WebCodingCat\WpAppFramework\Cache\CacheStore;
+use WebCodingCat\WpAppFramework\Cache\Tag\PostTypeTag;
+use WebCodingCat\WpAppFramework\Rest\HttpMethod;
+use WebCodingCat\WpAppFramework\Rest\Permission\Callback;
+use WebCodingCat\WpAppFramework\Rest\Permission\PublicAccess;
+use WebCodingCat\WpAppFramework\Rest\RestController;
+use WebCodingCat\WpAppFramework\Rest\RestRoute;
+use WebCodingCat\WpAppFramework\Value\ListOf;
 
 /**
  * REST routes with value class arguments, a callback permission and CacheStore::remember().

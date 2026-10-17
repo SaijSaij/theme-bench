@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Table;
+namespace WebCodingCat\ThemeBench\Table;
 
 enum BenchLevel: string
 {

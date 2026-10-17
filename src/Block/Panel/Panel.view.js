@@ -1,7 +1,7 @@
 /**
  * View script of the panel: front-end behavior of a block.
  */
-import { BlockView } from '@saij/wp-app-framework/view';
+import { BlockView } from '@webcodingcat/wp-app-framework/view';
 
 export default class Panel extends BlockView {
 	mount() {

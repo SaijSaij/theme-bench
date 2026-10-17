@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Showcase;
+namespace WebCodingCat\ThemeBench\Block\Showcase;
 
-use Saij\WpAppFramework\Block\Block;
-use Saij\WpAppFramework\Block\BlockCategory;
-use Saij\WpAppFramework\Twig\TemplateRenderer;
+use WebCodingCat\WpAppFramework\Block\Block;
+use WebCodingCat\WpAppFramework\Block\BlockCategory;
+use WebCodingCat\WpAppFramework\Twig\TemplateRenderer;
 
 /**
  * Every WordPress function of the framework's Twig, the function post() and is_editor().

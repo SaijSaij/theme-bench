@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Saij\BenchPlugin\Twig;
+namespace WebCodingCat\BenchPlugin\Twig;
 
-use Saij\WpAppFramework\Asset\Assets;
-use Saij\WpAppFramework\Twig\TemplateFunction;
+use WebCodingCat\WpAppFramework\Asset\Assets;
+use WebCodingCat\WpAppFramework\Twig\TemplateFunction;
 
 final readonly class NoteTemplates
 {

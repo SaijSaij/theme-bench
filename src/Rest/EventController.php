@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Rest;
+namespace WebCodingCat\ThemeBench\Rest;
 
-use Saij\ThemeBench\Post\Event;
-use Saij\ThemeBench\Post\EventDetails;
-use Saij\WpAppFramework\Cache\Cache;
-use Saij\WpAppFramework\Cache\Tag\PostTypeTag;
-use Saij\WpAppFramework\Cache\Vary\HeaderVary;
-use Saij\WpAppFramework\Cache\Vary\UserVary;
-use Saij\WpAppFramework\Rest\HttpMethod;
-use Saij\WpAppFramework\Rest\Permission\Capability;
-use Saij\WpAppFramework\Rest\Permission\PublicAccess;
-use Saij\WpAppFramework\Rest\RestController;
-use Saij\WpAppFramework\Rest\RestException;
-use Saij\WpAppFramework\Rest\RestRoute;
+use WebCodingCat\ThemeBench\Post\Event;
+use WebCodingCat\ThemeBench\Post\EventDetails;
+use WebCodingCat\WpAppFramework\Cache\Cache;
+use WebCodingCat\WpAppFramework\Cache\Tag\PostTypeTag;
+use WebCodingCat\WpAppFramework\Cache\Vary\HeaderVary;
+use WebCodingCat\WpAppFramework\Cache\Vary\UserVary;
+use WebCodingCat\WpAppFramework\Rest\HttpMethod;
+use WebCodingCat\WpAppFramework\Rest\Permission\Capability;
+use WebCodingCat\WpAppFramework\Rest\Permission\PublicAccess;
+use WebCodingCat\WpAppFramework\Rest\RestController;
+use WebCodingCat\WpAppFramework\Rest\RestException;
+use WebCodingCat\WpAppFramework\Rest\RestRoute;
 
 /**
  * Post objects through REST: a cached read with variants and a write that saves a post with its meta.

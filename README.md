@@ -41,7 +41,7 @@ Two runs differ by up to about 10 % in absolute times on the same machine; the d
 Run from this directory; the tools image of wp-test-env provides PHP, Composer and Node.
 
 ```sh
-../wp-test-env/bin/prepare --link saij/wp-app-framework=wp-app-framework theme-bench
+../wp-test-env/bin/prepare --link webcodingcat/wp-app-framework=wp-app-framework theme-bench
 ../wp-test-env/bin/tools -w theme-bench composer build-manifest
 ../wp-test-env/bin/tools -w theme-bench composer lint   # fix: composer fix
 docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable bin/bench

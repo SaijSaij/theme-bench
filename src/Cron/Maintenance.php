@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Cron;
+namespace WebCodingCat\ThemeBench\Cron;
 
-use Saij\WpAppFramework\Cron\CronEvent;
-use Saij\WpAppFramework\Cron\CronInterval;
-use Saij\WpAppFramework\Cron\CronTask;
+use WebCodingCat\WpAppFramework\Cron\CronEvent;
+use WebCodingCat\WpAppFramework\Cron\CronInterval;
+use WebCodingCat\WpAppFramework\Cron\CronTask;
 
 /**
  * Cron events with an interval in seconds and with a start time, which the framework checks on every request, and

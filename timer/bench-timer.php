@@ -22,7 +22,7 @@ if ($benchCoverage && function_exists('xdebug_start_code_coverage')) {
     register_shutdown_function(static function (): void {
         $covered = [];
         foreach (xdebug_get_code_coverage() as $file => $lines) {
-            if (str_contains($file, '/saij/wp-app-framework/src/')) {
+            if (str_contains($file, '/webcodingcat/wp-app-framework/src/')) {
                 $covered[$file] = $lines;
             }
         }

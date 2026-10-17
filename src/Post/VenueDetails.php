@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Post;
+namespace WebCodingCat\ThemeBench\Post;
 
-use Saij\WpAppFramework\Post\PostMeta;
+use WebCodingCat\WpAppFramework\Post\PostMeta;
 
 #[PostMeta('venue', title: 'Venue details', postTypes: [Venue::class])]
 final class VenueDetails

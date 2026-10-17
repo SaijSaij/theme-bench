@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Links;
+namespace WebCodingCat\ThemeBench\Block\Links;
 
-use Saij\WpAppFramework\Value\Link;
+use WebCodingCat\WpAppFramework\Value\Link;
 
 final readonly class LinksAttributes
 {

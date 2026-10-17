@@ -76,8 +76,8 @@ in_site() {
 if [[ "${skip_build}" == 0 ]]; then
     echo "== Building the ZIPs"
     # Composer and npm dependencies of the checkout, with the framework checkout linked into vendor/.
-    "${env_dir}/bin/prepare" --link saij/wp-app-framework=wp-app-framework theme-bench
-    tools composer --working-dir=/workspace/theme-bench release -- --package-source=saij/wp-app-framework=../wp-app-framework
+    "${env_dir}/bin/prepare" --link webcodingcat/wp-app-framework=wp-app-framework theme-bench
+    tools composer --working-dir=/workspace/theme-bench release -- --package-source=webcodingcat/wp-app-framework=../wp-app-framework
     # The plugin is released from a copy with a git repository of its own: in this repository the theme's
     # .gitattributes exclude it (export-ignore). Its vendor/ links the framework checkout like the package
     # links of wp-test-env (bin/prepare --link): the release command itself runs from vendor/.
@@ -85,8 +85,8 @@ if [[ "${skip_build}" == 0 ]]; then
         cd /workspace/theme-bench && rm -rf dist/bench-plugin && mkdir -p dist/bench-plugin
         git ls-files -co --exclude-standard bench-plugin | sed 's#^bench-plugin/##' | (cd bench-plugin && tar -cf - -T -) | tar -xf - -C dist/bench-plugin
         cd dist/bench-plugin && git init -q && composer install --no-interaction --quiet
-        rm -rf vendor/saij/wp-app-framework && ln -s ../../../../../wp-app-framework vendor/saij/wp-app-framework
-        composer release -- --package-source=saij/wp-app-framework=../../../wp-app-framework"
+        rm -rf vendor/webcodingcat/wp-app-framework && ln -s ../../../../../wp-app-framework vendor/webcodingcat/wp-app-framework
+        composer release -- --package-source=webcodingcat/wp-app-framework=../../../wp-app-framework"
     # The baseline is the theme without functions.php: same theme.json and templates.
     rm -rf dist/baseline dist/timer
     mkdir -p dist/baseline/theme-bench-baseline dist/timer/0-bench-timer
@@ -107,8 +107,8 @@ if [[ "${dev}" == 1 ]]; then
         git ls-files -co --exclude-standard | grep -v -E '^(bench-plugin|baseline|bin|timer)/' | tar -cf - -T - | tar -xf - -C dist/dev/theme-bench
         cp -r build dist/dev/theme-bench/
         cd dist/dev/theme-bench && composer install --no-dev --no-interaction --quiet
-        rm -rf vendor/saij/wp-app-framework && mkdir -p vendor/saij/wp-app-framework
-        cd /workspace/wp-app-framework && git ls-files -co --exclude-standard | grep -v -E '^(docs|tests)/' | tar -cf - -T - | tar -xf - -C /workspace/theme-bench/dist/dev/theme-bench/vendor/saij/wp-app-framework
+        rm -rf vendor/webcodingcat/wp-app-framework && mkdir -p vendor/webcodingcat/wp-app-framework
+        cd /workspace/wp-app-framework && git ls-files -co --exclude-standard | grep -v -E '^(docs|tests)/' | tar -cf - -T - | tar -xf - -C /workspace/theme-bench/dist/dev/theme-bench/vendor/webcodingcat/wp-app-framework
         php /workspace/theme-bench/bin/zip.php /workspace/theme-bench/dist/dev/theme-bench /workspace/theme-bench/${dev_zip}"
     theme_zip="${dev_zip}"
 fi

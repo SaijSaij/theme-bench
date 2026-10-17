@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Saij\ThemeBench\Block\Showcase;
+namespace WebCodingCat\ThemeBench\Block\Showcase;
 
-use Saij\WpAppFramework\Value\Image;
-use Saij\WpAppFramework\Value\PostReference;
+use WebCodingCat\WpAppFramework\Value\Image;
+use WebCodingCat\WpAppFramework\Value\PostReference;
 
 final readonly class ShowcaseAttributes
 {
